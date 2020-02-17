@@ -68,6 +68,8 @@ namespace FluentSpotify
 
             if (!Spotify.Instance.KeyStore.Authenticated)
                 await new LoginDialog().ShowAsync();
+
+            Spotify.Instance.GetAccountProperties();
         }
     }
 }

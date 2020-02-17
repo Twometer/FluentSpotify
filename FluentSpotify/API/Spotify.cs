@@ -82,7 +82,28 @@ namespace FluentSpotify.API
             if (!KeyStore.Expired)
                 return;
 
-            // TODO
+            var authData = await Request.New("https://accounts.spotify.com/api/token")
+                .AddParameter("grant_type", "refresh_token")
+                .AddParameter("refresh_token", KeyStore.RefreshToken)
+                .AddParameter("redirect_uri", CallbackUrl)
+                .Authenticate("Basic", $"{ClientId}:{ClientSecret}".ToBase64())
+                .Post();
+
+            var obj = JObject.Parse(authData);
+
+            KeyStore.AccessToken = obj.Value<string>("access_token");
+
+            var expiresIn = obj.Value<int>("expires_in");
+            KeyStore.AccessTokenExpiry = DateTime.Now.AddSeconds(expiresIn);
+            SaveKeystore();
+        }
+
+        public async void GetAccountProperties()
+        {
+            var tok = await Request.New("https://api.spotify.com/v1/me")
+                .Authenticate("Bearer", KeyStore.AccessToken)
+                .Get();
+            Console.WriteLine(tok);
         }
 
         private void SaveKeystore()
