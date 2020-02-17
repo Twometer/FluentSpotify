@@ -25,7 +25,7 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="96"></RowDefinition>
         </Grid.RowDefinitions>
-        <muxc:NavigationView x:Name="NavView" Grid.Row="0" IsTitleBarAutoPaddingEnabled="False">
+        <muxc:NavigationView x:Name="NavView" Grid.Row="0" IsTitleBarAutoPaddingEnabled="False" PaneTitle="Your library">
             <muxc:NavigationView.AutoSuggestBox>
                 <!-- See AutoSuggestBox documentation for
                  more info about how to implement search. -->
@@ -49,17 +49,65 @@
             </muxc:NavigationView.MenuItems>
 
         </muxc:NavigationView>
-        <Grid Background="{StaticResource SystemControlChromeHighAcrylicWindowMediumBrush}" Grid.Row="1">
+        <Grid Background="{ThemeResource SystemControlChromeHighAcrylicWindowMediumBrush}" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="96"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="296"/>
             </Grid.ColumnDefinitions>
-            <Image Source="Assets/UnknownSong.png" Grid.Column="0"/>
+            <Image x:Name="ThumbnailImage" Source="Assets/UnknownSong.png" Grid.Column="0"/>
             <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" Margin="25,0,0,0">
-                <TextBlock Text="Blinding Lights" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock Text="The Weeknd" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBlock x:Name="SongLabel" Text="Blinding Lights" FontSize="20" Style="{ThemeResource TitleTextBlockStyle}"/>
+                <TextBlock x:Name="ArtistLabel" Text="The Weeknd" FontSize="17" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+            </StackPanel>
+           
+            <!-- Pause: 59241 -->
+            <Grid Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <CommandBar OverflowButtonVisibility="Collapsed" IsDynamicOverflowEnabled="False" Background="Transparent" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+                    <AppBarButton x:Name="PrevButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42">
+                        <AppBarButton.Icon>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59538;"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarButton x:Name="PlayPauseButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42">
+                        <AppBarButton.Icon>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59240;"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarButton x:Name="NextButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42">
+                        <AppBarButton.Icon>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59539;"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                </CommandBar>
+                <TextBlock x:Name="ElapsedTimeLabel" Grid.Column="0" Grid.Row="2" Margin="10,5,10,5">1:34</TextBlock>
+                <Slider x:Name="TimeSlider" Grid.Column="1" Grid.Row="2"></Slider>
+                <TextBlock x:Name="TotalTimeLabel" Grid.Column="2" Grid.Row="2" Margin="10,5,10,5">3:21</TextBlock>
+            </Grid>
+            <StackPanel Orientation="Horizontal" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Height="42">
+                <AppBarButton x:Name="MuteButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42" Margin="0,0,20,0">
+                    <AppBarButton.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59239;"/>
+                    </AppBarButton.Icon>
+                </AppBarButton>
+
+                <Slider x:Name="VolumeSlider" VerticalAlignment="Center" Width="120"></Slider>
+
+                <AppBarButton x:Name="MoreButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42" Margin="20,0,0,0">
+                    <AppBarButton.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59154;"/>
+                    </AppBarButton.Icon>
+                </AppBarButton>
             </StackPanel>
         </Grid>
     </Grid>
