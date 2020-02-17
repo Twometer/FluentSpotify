@@ -6,9 +6,61 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <Page.Resources>
+        <ResourceDictionary>
+            <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground"
+                  BackgroundSource="Backdrop" TintColor="{ThemeResource SystemChromeMediumColor}" TintOpacity=".5"/>
+            <AcrylicBrush x:Key="NavigationViewTopPaneBackground"
+                  BackgroundSource="Backdrop" TintColor="{ThemeResource SystemChromeMediumColor}" TintOpacity=".5"/>
+            <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground"
+                  BackgroundSource="HostBackdrop" TintColor="{ThemeResource SystemChromeMediumColor}" TintOpacity=".7"/>
+        </ResourceDictionary>
+    </Page.Resources>
 
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="96"></RowDefinition>
+        </Grid.RowDefinitions>
+        <muxc:NavigationView x:Name="NavView" Grid.Row="0" IsTitleBarAutoPaddingEnabled="False">
+            <muxc:NavigationView.AutoSuggestBox>
+                <!-- See AutoSuggestBox documentation for
+                 more info about how to implement search. -->
+                <AutoSuggestBox x:Name="NavViewSearchBox" QueryIcon="Find" PlaceholderText="Find songs" />
+            </muxc:NavigationView.AutoSuggestBox>
+            <muxc:NavigationView.MenuItems>
+                <muxc:NavigationViewItem Tag="home" Icon="Home" Content="Home"/>
+                <muxc:NavigationViewItem Tag="home" Icon="World" Content="Browse"/>
+                <muxc:NavigationViewItem Tag="home" Content="Radio">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59530;"/>
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
+                <muxc:NavigationViewItem Tag="home" Content="Liked Songs">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#57350;"/>
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
+                <muxc:NavigationViewItemSeparator/>
+                <muxc:NavigationViewItemHeader Content="Playlists"/>
+            </muxc:NavigationView.MenuItems>
+
+        </muxc:NavigationView>
+        <Grid Background="{StaticResource SystemControlChromeHighAcrylicWindowMediumBrush}" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="96"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Image Source="Assets/UnknownSong.png" Grid.Column="0"/>
+            <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" Margin="25,0,0,0">
+                <TextBlock Text="Blinding Lights" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock Text="The Weeknd" Style="{StaticResource SubtitleTextBlockStyle}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>
