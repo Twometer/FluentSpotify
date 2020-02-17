@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded">
 
     <Page.Resources>
         <ResourceDictionary>
@@ -25,7 +26,7 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="96"></RowDefinition>
         </Grid.RowDefinitions>
-        <muxc:NavigationView x:Name="NavView" Grid.Row="0" IsTitleBarAutoPaddingEnabled="False" PaneTitle="Your library">
+        <muxc:NavigationView x:Name="NavView" Grid.Row="0" IsTitleBarAutoPaddingEnabled="False" PaneTitle="Your library" ItemInvoked="NavView_ItemInvoked">
             <muxc:NavigationView.AutoSuggestBox>
                 <AutoSuggestBox x:Name="SearchBox" QueryIcon="Find" PlaceholderText="Find songs" />
             </muxc:NavigationView.AutoSuggestBox>

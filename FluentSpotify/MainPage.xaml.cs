@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FluentSpotify.UI;
+using FluentSpotify.Web;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -52,6 +54,16 @@ namespace FluentSpotify
                 Icon = new SymbolIcon(isFolder ? (Symbol)59575 : Symbol.MusicInfo),
                 Tag = "list-8127590879354"
             });
+        }
+
+        private void NavView_ItemInvoked(MS.NavigationView sender, MS.NavigationViewItemInvokedEventArgs args)
+        {
+
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            await new LoginDialog().ShowAsync();
         }
     }
 }
