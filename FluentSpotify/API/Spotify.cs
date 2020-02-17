@@ -98,12 +98,14 @@ namespace FluentSpotify.API
             SaveKeystore();
         }
 
-        public async void GetAccountProperties()
+        public async Task<Account> GetAccountProperties()
         {
-            var tok = await Request.New("https://api.spotify.com/v1/me")
+            await RefreshToken();
+
+            var data = await Request.New("https://api.spotify.com/v1/me")
                 .Authenticate("Bearer", KeyStore.AccessToken)
                 .Get();
-            Console.WriteLine(tok);
+            return Account.Parse(data);
         }
 
         private void SaveKeystore()

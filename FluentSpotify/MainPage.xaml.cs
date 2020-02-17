@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 using MS = Microsoft.UI.Xaml.Controls;
@@ -59,7 +60,7 @@ namespace FluentSpotify
 
         private void NavView_ItemInvoked(MS.NavigationView sender, MS.NavigationViewItemInvokedEventArgs args)
         {
-
+  
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -69,7 +70,18 @@ namespace FluentSpotify
             if (!Spotify.Instance.KeyStore.Authenticated)
                 await new LoginDialog().ShowAsync();
 
-            Spotify.Instance.GetAccountProperties();
+            var account = await Spotify.Instance.GetAccountProperties();
+            UserItem.Content = account.DisplayName;
+            UserItem.Icon = new BitmapIcon() { UriSource = new Uri(account.ImageUrl, UriKind.Absolute), ShowAsMonochrome = false };
+            Console.WriteLine(account);
+        }
+
+        private void SwitchThemeButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (RequestedTheme == ElementTheme.Light)
+                RequestedTheme = ElementTheme.Dark;
+            else
+                RequestedTheme = ElementTheme.Light;
         }
     }
 }
