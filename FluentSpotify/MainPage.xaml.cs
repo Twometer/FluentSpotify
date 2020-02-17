@@ -1,4 +1,5 @@
-﻿using FluentSpotify.UI;
+﻿using FluentSpotify.API;
+using FluentSpotify.UI;
 using FluentSpotify.Web;
 using System;
 using System.Collections.Generic;
@@ -63,7 +64,10 @@ namespace FluentSpotify
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await new LoginDialog().ShowAsync();
+            Spotify.Instance.Initialize();
+
+            if (!Spotify.Instance.KeyStore.Authenticated)
+                await new LoginDialog().ShowAsync();
         }
     }
 }

@@ -6,15 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title=""
-    PrimaryButtonText=""
-    SecondaryButtonText=""
-    Loaded="ContentDialog_Loaded"
-    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
-    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+    Loaded="ContentDialog_Loaded">
 
     <Grid>
-        <ProgressRing Opacity="1" Width="64" Height="64" IsActive="True"/>
+        <ProgressRing Width="64" Height="64" IsActive="True"/>
         <WebView Height="400" Width="400" Name="WebView" NavigationStarting="WebView_NavigationStarting" LoadCompleted="WebView_LoadCompleted" Opacity="0"/>
     </Grid>
 </ContentDialog>

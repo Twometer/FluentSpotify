@@ -116,6 +116,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="API\KeyStore.cs" />
     <Compile Include="API\Spotify.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -129,6 +130,8 @@
       <DependentUpon>LoginDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WindowsTheme.cs" />
+    <Compile Include="Web\Base64.cs" />
+    <Compile Include="Web\Query.cs" />
     <Compile Include="Web\Request.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +170,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
       <Version>2.3.200213001</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
     </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

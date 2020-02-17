@@ -12,6 +12,10 @@ namespace FluentSpotify.Web
     {
         private string endpoint;
 
+        private string query;
+
+        private string authorization = null;
+
         private readonly IDictionary<string, string> queryParameters;
 
         private Request(string endpoint)
@@ -26,46 +30,83 @@ namespace FluentSpotify.Web
             return new Request(normalized);
         }
 
+        public Request Authenticate(string scheme, string val)
+        {
+            this.authorization = scheme + " " + val;
+            return this;
+        }
+
         public Request AddParameter(string key, string val)
         {
             queryParameters.Add(key, val);
             return this;
         }
 
-        public string Build()
+        public string ToUrl()
         {
-            if (queryParameters.Count > 0)
-            {
-                endpoint += "?";
-                var first = true;
-                foreach (var param in queryParameters)
-                {
-                    var key = WebUtility.UrlEncode(param.Key);
-                    var val = WebUtility.UrlEncode(param.Value);
-
-                    if (first) first = false;
-                    else endpoint += "&";
-
-
-                    endpoint += $"{key}={val}";
-                }
-            }
-            return endpoint;
+            BuildQuery();
+            return endpoint + "?" + query;
         }
 
-        public async Task<string> Send()
+        public async Task<string> Get()
         {
-            Build();
-
-            var request = WebRequest.CreateHttp(endpoint);
+            var request = BuildRequest(ToUrl());
             var response = await request.GetResponseAsync();
             var stream = response.GetResponseStream();
-            
+
             using (var reader = new StreamReader(stream))
             {
                 return reader.ReadToEnd();
             }
         }
 
+        public async Task<string> Post()
+        {
+            BuildQuery();
+
+            var request = BuildRequest(endpoint);
+            request.Method = "POST";
+            request.ContentLength = Encoding.UTF8.GetByteCount(query);
+            request.ContentType = "application/x-www-form-urlencoded";
+
+            var reqStream = await request.GetRequestStreamAsync();
+            using (var writer = new StreamWriter(reqStream))
+            {
+                writer.Write(query);
+            }
+
+            var response = await request.GetResponseAsync();
+            var respStream = response.GetResponseStream();
+            using (var reader = new StreamReader(respStream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+        private HttpWebRequest BuildRequest(string url)
+        {
+            var req = WebRequest.CreateHttp(url);
+            req.UserAgent = "FluentSpotify/1.00";
+            if (!string.IsNullOrEmpty(authorization))
+                req.Headers.Add(HttpRequestHeader.Authorization, authorization);
+            return req;
+        }
+
+        private void BuildQuery()
+        {
+            var first = true;
+            query = string.Empty;
+            foreach (var param in queryParameters)
+            {
+                var key = WebUtility.UrlEncode(param.Key);
+                var val = WebUtility.UrlEncode(param.Value);
+
+                if (first) first = false;
+                else query += "&";
+
+
+                query += $"{key}={val}";
+            }
+        }
     }
 }

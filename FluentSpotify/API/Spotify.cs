@@ -1,4 +1,6 @@
 ﻿using FluentSpotify.Web;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +15,16 @@ namespace FluentSpotify.API
 
         public const string ClientSecret = "6fb896615e4d4eab85e75edae2e4a00d";
 
-        public const string CallbackUrl = "x-fluent-sp://oauth_callback";
+        public const string CallbackUrl = "http://x-fluent-sp/oauth_callback/";
 
         public static Spotify Instance { get; } = new Spotify();
 
+        public KeyStore KeyStore { get; private set; } = new KeyStore();
+
+        public void Initialize()
+        {
+            LoadKeystore();
+        }
 
         public string BuildAuthUrl()
         {
@@ -44,7 +52,52 @@ namespace FluentSpotify.API
                 .AddParameter("response_type", "code")
                 .AddParameter("redirect_uri", CallbackUrl)
                 .AddParameter("scope", scopes)
-                .Build();
+                .ToUrl();
+        }
+
+        public async Task ContinueLogin(Uri uri)
+        {
+            var query = Query.Parse(uri.Query);
+            KeyStore.AuthorizationCode = query["code"];
+
+            var authData = await Request.New("https://accounts.spotify.com/api/token")
+                .AddParameter("grant_type", "authorization_code")
+                .AddParameter("code", KeyStore.AuthorizationCode)
+                .AddParameter("redirect_uri", CallbackUrl)
+                .Authenticate("Basic", $"{ClientId}:{ClientSecret}".ToBase64())
+                .Post();
+
+            var obj = JObject.Parse(authData);
+
+            KeyStore.AccessToken = obj.Value<string>("access_token");
+            KeyStore.RefreshToken = obj.Value<string>("refresh_token");
+
+            var expiresIn = obj.Value<int>("expires_in");
+            KeyStore.AccessTokenExpiry = DateTime.Now.AddSeconds(expiresIn);
+            SaveKeystore();
+        }
+
+        public async Task RefreshToken()
+        {
+            if (!KeyStore.Expired)
+                return;
+
+            // TODO
+        }
+
+        private void SaveKeystore()
+        {
+            var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            settings.Values["keyStore"] = JsonConvert.SerializeObject(KeyStore);
+        }
+
+        private void LoadKeystore()
+        {
+            var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            var value = (string)settings.Values["keyStore"];
+            if (value == null) return;
+
+            KeyStore = JsonConvert.DeserializeObject<KeyStore>(value);
         }
 
     }
