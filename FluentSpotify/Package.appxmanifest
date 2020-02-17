@@ -32,10 +32,10 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="FluentSpotify.App">
       <uap:VisualElements
-        DisplayName="FluentSpotify"
+        DisplayName="Fluent Spotify"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="FluentSpotify"
+        Description="A beautiful Spotify client using the fluent design"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png"  BackgroundColor="#000000"/>

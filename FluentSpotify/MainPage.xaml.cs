@@ -37,16 +37,19 @@ namespace FluentSpotify
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
 
-            AddPlaylist("Discover Weekly");
-            AddPlaylist("enbo Club-Essentials");
+            AddPlaylist("Discover Weekly", false);
+            AddPlaylist("enbo Club-Essentials", false);
+            AddPlaylist("Spotify", true);
+            AddPlaylist("Folder 1", true);
+            AddPlaylist("Folder 2", true);
         }
 
-        public void AddPlaylist(string name)
+        public void AddPlaylist(string name, bool isFolder)
         {
             NavView.MenuItems.Add(new MS.NavigationViewItem
             {
                 Content = name,
-                Icon = new SymbolIcon(Symbol.MusicInfo),
+                Icon = new SymbolIcon(isFolder ? (Symbol)59575 : Symbol.MusicInfo),
                 Tag = "list-8127590879354"
             });
         }
