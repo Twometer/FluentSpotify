@@ -27,12 +27,10 @@
         </Grid.RowDefinitions>
         <muxc:NavigationView x:Name="NavView" Grid.Row="0" IsTitleBarAutoPaddingEnabled="False" PaneTitle="Your library">
             <muxc:NavigationView.AutoSuggestBox>
-                <!-- See AutoSuggestBox documentation for
-                 more info about how to implement search. -->
-                <AutoSuggestBox x:Name="NavViewSearchBox" QueryIcon="Find" PlaceholderText="Find songs" />
+                <AutoSuggestBox x:Name="SearchBox" QueryIcon="Find" PlaceholderText="Find songs" />
             </muxc:NavigationView.AutoSuggestBox>
             <muxc:NavigationView.MenuItems>
-                <muxc:NavigationViewItem Tag="home" Icon="Home" Content="Home"/>
+                <muxc:NavigationViewItem Tag="home" Icon="Home" Content="Home" IsSelected="True"/>
                 <muxc:NavigationViewItem Tag="home" Icon="World" Content="Browse"/>
                 <muxc:NavigationViewItem Tag="home" Content="Radio">
                     <muxc:NavigationViewItem.Icon>

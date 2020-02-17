@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+using MS = Microsoft.UI.Xaml.Controls;
+
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace FluentSpotify
@@ -34,6 +36,19 @@ namespace FluentSpotify
 
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
+
+            AddPlaylist("Discover Weekly");
+            AddPlaylist("enbo Club-Essentials");
+        }
+
+        public void AddPlaylist(string name)
+        {
+            NavView.MenuItems.Add(new MS.NavigationViewItem
+            {
+                Content = name,
+                Icon = new SymbolIcon(Symbol.MusicInfo),
+                Tag = "list-8127590879354"
+            });
         }
     }
 }

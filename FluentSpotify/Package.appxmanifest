@@ -14,8 +14,8 @@
   <mp:PhoneIdentity PhoneProductId="6cebbf79-d67a-4f8b-a94e-f3238cd87569" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>FluentSpotify</DisplayName>
-    <PublisherDisplayName>twome</PublisherDisplayName>
+    <DisplayName>Fluent Spotify</DisplayName>
+    <PublisherDisplayName>Twometer Applications</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -38,7 +38,7 @@
         Description="FluentSpotify"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png"  BackgroundColor="#000000"/>
       </uap:VisualElements>
     </Application>
   </Applications>
