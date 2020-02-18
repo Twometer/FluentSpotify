@@ -9,13 +9,13 @@ namespace FluentSpotify.API
 {
     public class Account
     {
-        public string Id { get; set; }
+        public string Id { get; private set; }
 
-        public string DisplayName { get; set; }
+        public string DisplayName { get; private set; }
 
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; private set; }
 
-        public int Followers { get; set; }
+        public int Followers { get; private set; }
 
         public static Account Parse(string json)
         {

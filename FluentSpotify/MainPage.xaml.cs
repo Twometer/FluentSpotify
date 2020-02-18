@@ -1,4 +1,5 @@
 ﻿using FluentSpotify.API;
+using FluentSpotify.Model;
 using FluentSpotify.UI;
 using FluentSpotify.Web;
 using System;
@@ -40,21 +41,15 @@ namespace FluentSpotify
 
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
-
-            AddPlaylist("Discover Weekly", false);
-            AddPlaylist("enbo Club-Essentials", false);
-            AddPlaylist("Spotify", true);
-            AddPlaylist("Folder 1", true);
-            AddPlaylist("Folder 2", true);
         }
 
-        public void AddPlaylist(string name, bool isFolder)
+        public void AddPlaylist(Playlist playlist)
         {
             NavView.MenuItems.Add(new MS.NavigationViewItem
             {
-                Content = name,
-                Icon = new SymbolIcon(isFolder ? (Symbol)59575 : Symbol.MusicInfo),
-                Tag = "list-8127590879354"
+                Content = playlist.Name,
+                Icon = new SymbolIcon(Symbol.MusicInfo),
+                Tag = "list-" + playlist.Id
             });
         }
 
@@ -65,15 +60,18 @@ namespace FluentSpotify
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            Spotify.Instance.Initialize();
+            Spotify.Initialize();
 
-            if (!Spotify.Instance.KeyStore.Authenticated)
+            if (!Spotify.Auth.KeyStore.Authenticated)
                 await new LoginDialog().ShowAsync();
 
-            var account = await Spotify.Instance.GetAccountProperties();
+            var account = await Spotify.Account.GetAccount();
             UserItem.Content = account.DisplayName;
             UserItem.Icon = new BitmapIcon() { UriSource = new Uri(account.ImageUrl, UriKind.Absolute), ShowAsMonochrome = false };
-            Console.WriteLine(account);
+
+            var playlists = await Spotify.Account.GetPlaylists();
+            foreach (var list in playlists)
+                AddPlaylist(list);
         }
 
         private void SwitchThemeButton_Tapped(object sender, TappedRoutedEventArgs e)

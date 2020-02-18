@@ -31,17 +31,17 @@ namespace FluentSpotify.UI
 
         private void ContentDialog_Loaded(object sender, RoutedEventArgs e)
         {
-            WebView.Navigate(new Uri(Spotify.Instance.BuildAuthUrl(), UriKind.Absolute));
+            WebView.Navigate(new Uri(Spotify.Auth.BeginAuth(), UriKind.Absolute));
         }
 
         private async void WebView_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
         {
             var uri = args.Uri.ToString();
-            if (uri.StartsWith(Spotify.CallbackUrl))
+            if (uri.StartsWith(AuthApi.CallbackUrl))
             {
                 args.Cancel = true;
                 WebView.Opacity = 0;
-                await Spotify.Instance.ContinueLogin(args.Uri);
+                await Spotify.Auth.FinishAuth(args.Uri);
                 Hide();
             }
             else if (!uri.StartsWith("https://accounts.spotify.com"))

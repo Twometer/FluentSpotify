@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FluentSpotify")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Fluent Spotify")]
+[assembly: AssemblyDescription("A beautiful Spotify client using the fluent design")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FluentSpotify")]
-[assembly: AssemblyCopyright("Copyright ©  2020")]
+[assembly: AssemblyCompany("Twometer Applications")]
+[assembly: AssemblyProduct("Fluent Spotify")]
+[assembly: AssemblyCopyright("Copyright © 2020 Twometer Applications")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

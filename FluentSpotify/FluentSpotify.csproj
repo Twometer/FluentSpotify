@@ -116,7 +116,9 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="API\Account.cs" />
+    <Compile Include="API\AccountApi.cs" />
+    <Compile Include="API\AuthApi.cs" />
+    <Compile Include="Model\Account.cs" />
     <Compile Include="API\KeyStore.cs" />
     <Compile Include="API\Spotify.cs" />
     <Compile Include="App.xaml.cs">

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace FluentSpotify.Web
 
         private string query;
 
-        private string authorization = null;
+        private string authorization;
 
         private readonly IDictionary<string, string> queryParameters;
 
@@ -45,7 +46,30 @@ namespace FluentSpotify.Web
         public string ToUrl()
         {
             BuildQuery();
-            return endpoint + "?" + query;
+
+            if (string.IsNullOrEmpty(query))
+                return endpoint;
+            else
+                return endpoint + "?" + query;
+        }
+
+        public async Task<IEnumerable<T>> GetPaged<T>(Func<JObject, T> mapper)
+        {
+            var ret = new List<T>();
+            while (true)
+            {
+                var obj = JObject.Parse(await Get());
+                var arr = obj["items"] as JArray;
+
+                foreach (var item in arr)
+                    ret.Add(mapper(item as JObject));
+
+                var next = obj.Value<string>("next");
+                endpoint = next;
+                if (string.IsNullOrEmpty(next))
+                    break;
+            }
+            return ret;
         }
 
         public async Task<string> Get()
