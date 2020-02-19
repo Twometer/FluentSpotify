@@ -26,7 +26,8 @@ namespace FluentSpotify.API
 
             var data = await Request.New("https://api.spotify.com/v1/me/playlists")
                 .Authenticate("Bearer", Spotify.AccessToken)
-                .GetPaged(obj => Playlist.Parse(obj));
+                .GetPaged(obj => Playlist.Parse(obj))
+                .All();
 
             return data;
         }

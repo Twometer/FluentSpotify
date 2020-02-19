@@ -52,6 +52,10 @@
                     <muxc:NavigationViewItem x:Name="UserItem" Tag="user" Content="User Name" Icon="Contact"/>
                 </StackPanel>
             </muxc:NavigationView.PaneFooter>
+
+            <ScrollViewer>
+                <Frame x:Name="ContentFrame"/>
+            </ScrollViewer>
         </muxc:NavigationView>
         <Grid Background="{ThemeResource SystemControlChromeHighAcrylicWindowMediumBrush}" Grid.Row="1">
             <Grid.ColumnDefinitions>

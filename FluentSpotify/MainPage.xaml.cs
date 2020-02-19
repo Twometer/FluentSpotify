@@ -31,6 +31,10 @@ namespace FluentSpotify
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private IDictionary<string, Playlist> loadedPlaylists = new Dictionary<string, Playlist>();
+
+        private string lastNav;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -43,7 +47,7 @@ namespace FluentSpotify
             coreTitleBar.ExtendViewIntoTitleBar = true;
         }
 
-        public void AddPlaylist(Playlist playlist)
+        private void AddPlaylist(Playlist playlist)
         {
             NavView.MenuItems.Add(new MS.NavigationViewItem
             {
@@ -51,11 +55,24 @@ namespace FluentSpotify
                 Icon = new SymbolIcon(Symbol.MusicInfo),
                 Tag = "list-" + playlist.Id
             });
+            loadedPlaylists[playlist.Id] = playlist;
         }
 
         private void NavView_ItemInvoked(MS.NavigationView sender, MS.NavigationViewItemInvokedEventArgs args)
         {
-  
+            var tag = args.InvokedItemContainer.Tag as string;
+
+            if (tag == lastNav)
+                return;
+
+            if (tag.StartsWith("list-"))
+            {
+                var id = tag.Substring("list-".Length);
+                var playlist = loadedPlaylists[id];
+                ContentFrame.Navigate(typeof(PlaylistPage), playlist, args.RecommendedNavigationTransitionInfo);
+            }
+
+            lastNav = tag;
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -69,6 +86,7 @@ namespace FluentSpotify
             UserItem.Content = account.DisplayName;
             UserItem.Icon = new BitmapIcon() { UriSource = new Uri(account.ImageUrl, UriKind.Absolute), ShowAsMonochrome = false };
 
+            loadedPlaylists.Clear();
             var playlists = await Spotify.Account.GetPlaylists();
             foreach (var list in playlists)
                 AddPlaylist(list);

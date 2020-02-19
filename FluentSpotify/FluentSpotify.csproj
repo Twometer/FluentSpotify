@@ -118,6 +118,7 @@
   <ItemGroup>
     <Compile Include="API\AccountApi.cs" />
     <Compile Include="API\AuthApi.cs" />
+    <Compile Include="API\TracksApi.cs" />
     <Compile Include="Model\Account.cs" />
     <Compile Include="API\KeyStore.cs" />
     <Compile Include="API\Spotify.cs" />
@@ -127,13 +128,21 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\ImageInfo.cs" />
     <Compile Include="Model\Playlist.cs" />
+    <Compile Include="Model\Track.cs" />
+    <Compile Include="NavigationTransistionInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\LoginDialog.xaml.cs">
       <DependentUpon>LoginDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\PlaylistPage.xaml.cs">
+      <DependentUpon>PlaylistPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WindowsTheme.cs" />
-    <Compile Include="Web\Base64.cs" />
+    <Compile Include="Util\Base64.cs" />
+    <Compile Include="Util\Extensions.cs" />
+    <Compile Include="Web\PagedRequest.cs" />
     <Compile Include="Web\Query.cs" />
     <Compile Include="Web\Request.cs" />
   </ItemGroup>
@@ -166,6 +175,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\PlaylistPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
@@ -177,6 +190,11 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

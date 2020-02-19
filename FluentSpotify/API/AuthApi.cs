@@ -1,4 +1,5 @@
-﻿using FluentSpotify.Web;
+﻿using FluentSpotify.Util;
+using FluentSpotify.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -50,6 +51,9 @@ namespace FluentSpotify.API
 
         public async Task FinishAuth(Uri callbackUri)
         {
+            if (callbackUri == null)
+                throw new ArgumentNullException($"{nameof(callbackUri)} cannot be null");
+
             var query = Query.Parse(callbackUri.Query);
             KeyStore.AuthorizationCode = query["code"];
 

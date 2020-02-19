@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,6 +14,8 @@ namespace FluentSpotify.Model
 
         public string Name { get; private set; }
 
+        public string Description { get; private set; }
+
         public string Owner { get; private set; }
 
         public bool Collaborative { get; private set; }
@@ -21,7 +24,7 @@ namespace FluentSpotify.Model
 
         public int TrackCount { get; private set; }
 
-        public string ImageUrl { get; private set; }
+        public IEnumerable<ImageInfo> Images { get; private set; }
 
         public static Playlist Parse(JObject json)
         {
@@ -29,11 +32,12 @@ namespace FluentSpotify.Model
             {
                 Id = json.Value<string>("id"),
                 Name = json.Value<string>("name"),
+                Description = WebUtility.HtmlDecode(json.Value<string>("description")),
                 Owner = json["owner"].Value<string>("display_name"),
                 Collaborative = json.Value<bool>("collaborative"),
                 Public = json.Value<bool>("public"),
                 TrackCount = json["tracks"].Value<int>("total"),
-                ImageUrl = json["images"].First?.Value<string>("url")
+                Images = (json["images"] as JArray)?.Select(obj => ImageInfo.Parse((JObject)obj))
             };
         }
     }

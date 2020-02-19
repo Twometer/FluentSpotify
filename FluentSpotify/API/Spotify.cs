@@ -9,11 +9,13 @@ using System.Threading.Tasks;
 
 namespace FluentSpotify.API
 {
-    public class Spotify
+    public static class Spotify
     {
         public static AuthApi Auth { get; } = new AuthApi();
 
         public static AccountApi Account { get; } = new AccountApi();
+
+        public static TracksApi Tracks { get; } = new TracksApi();
 
         public static string AccessToken => Auth.KeyStore.AccessToken;
 

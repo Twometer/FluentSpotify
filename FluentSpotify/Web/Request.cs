@@ -27,13 +27,18 @@ namespace FluentSpotify.Web
 
         public static Request New(string endpoint)
         {
-            var normalized = new Uri(endpoint).AbsoluteUri.ToString().Trim('/');
+            var normalized = new Uri(endpoint).AbsoluteUri.Trim('/');
             return new Request(normalized);
         }
 
         public Request Authenticate(string scheme, string val)
         {
-            this.authorization = scheme + " " + val;
+            return Authenticate($"{scheme} {val}");
+        }
+
+        public Request Authenticate(string header)
+        {
+            this.authorization = header;
             return this;
         }
 
@@ -53,23 +58,9 @@ namespace FluentSpotify.Web
                 return endpoint + "?" + query;
         }
 
-        public async Task<IEnumerable<T>> GetPaged<T>(Func<JObject, T> mapper)
+        public PagedRequest<T> GetPaged<T>(Func<JObject, T> mapper)
         {
-            var ret = new List<T>();
-            while (true)
-            {
-                var obj = JObject.Parse(await Get());
-                var arr = obj["items"] as JArray;
-
-                foreach (var item in arr)
-                    ret.Add(mapper(item as JObject));
-
-                var next = obj.Value<string>("next");
-                endpoint = next;
-                if (string.IsNullOrEmpty(next))
-                    break;
-            }
-            return ret;
+            return new PagedRequest<T>(endpoint, authorization, mapper);
         }
 
         public async Task<string> Get()
