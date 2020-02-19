@@ -52,6 +52,26 @@
 
             // Connect to the player!
             player.connect();
+
+            setInterval(() => {
+
+                player.getCurrentState().then(state => {
+
+                    if (state == null)
+                        return; 
+
+                    let event = {
+                        eventType: "position_change",
+                        eventData: {
+                            position: state.position
+                        }
+                    };
+
+                    window.external.notify(JSON.stringify(event));
+
+                });
+
+            }, 1000);
         }
 
         function GetPlayerId() {

@@ -36,6 +36,8 @@ namespace FluentSpotify.Model
 
         public string[] AvailableMarkets { get; private set; }
 
+        public IEnumerable<ImageInfo> Images { get; private set; }
+
         public static Track Parse(JObject obj)
         {
             var trackObj = obj["track"];
@@ -62,7 +64,8 @@ namespace FluentSpotify.Model
                 Id = obj.Value<string>("id"),
                 Name = obj.Value<string>("name"),
                 Duration = TimeSpan.FromMilliseconds(obj.Value<int>("duration_ms")),
-                Artists = (obj["artists"] as JArray)?.Select(artist => artist.Value<string>("name")).ToArray()
+                Artists = (obj["artists"] as JArray)?.Select(artist => artist.Value<string>("name")).ToArray(),
+                Images = (obj["album"]["images"] as JArray)?.Select(imgObj => ImageInfo.Parse((JObject)imgObj))
             };
             return result;
         }

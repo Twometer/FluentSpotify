@@ -102,16 +102,35 @@ namespace FluentSpotify
             Spotify.Playback = player;
 
             Spotify.Playback.PlaybackStateChanged += Playback_PlaybackStateChanged;
+            Spotify.Playback.TrackPositionChanged += Playback_TrackPositionChanged;
+        }
+
+        private void Playback_TrackPositionChanged(object sender, EventArgs e)
+        {
+            if (Spotify.Playback.CurrentTrack == null)
+                return;
+
+            var pos = Spotify.Playback.Position;
+            var percentage = Spotify.Playback.Position / Spotify.Playback.CurrentTrack.Duration.TotalMilliseconds * 100;
+            TimeSlider.Value = percentage;
+            ElapsedTimeLabel.Text = TimeSpan.FromMilliseconds(pos).ToString(@"m\:ss");
         }
 
         private void Playback_PlaybackStateChanged(object sender, EventArgs e)
         {
             var pb = Spotify.Playback;
 
-            SongLabel.Text = pb.CurrentTrack.Name;
-            ArtistLabel.Text = pb.CurrentTrack.ArtistsString;
-            TotalTimeLabel.Text = pb.CurrentTrack.DurationString;
+            if (pb.IsPlaying)
+            {
+                SongLabel.Text = pb.CurrentTrack.Name;
+                ArtistLabel.Text = pb.CurrentTrack.ArtistsString;
+                TotalTimeLabel.Text = pb.CurrentTrack.DurationString;
+
+                var image = pb.CurrentTrack.Images.FindByResolution(300);
+                ThumbnailImage.Source = new BitmapImage() { UriSource = new Uri(image.Url, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(ThumbnailImage.Width), DecodePixelHeight = (int)Math.Floor(ThumbnailImage.Height) };
+            }
             PlaybackFontIcon.Glyph = pb.IsPlaying ? ((char)59241).ToString() :  ((char)59240).ToString();
+            
         }
 
         private void SwitchThemeButton_Tapped(object sender, TappedRoutedEventArgs e)

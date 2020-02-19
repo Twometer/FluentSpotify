@@ -20,7 +20,11 @@ namespace FluentSpotify.Playback
 
         public Track CurrentTrack { get; private set; }
 
+        public int Position { get; private set; }
+
         public event EventHandler PlaybackStateChanged;
+
+        public event EventHandler TrackPositionChanged;
 
 
         private WebView container;
@@ -72,6 +76,8 @@ namespace FluentSpotify.Playback
         public async Task TogglePlayback()
         {
             await container.RunScript("window.player.togglePlay();");
+            IsPlaying = !IsPlaying;
+            PlaybackStateChanged.Invoke(this, new EventArgs());
         }
 
         public async Task SetVolume(double vol)
@@ -89,7 +95,17 @@ namespace FluentSpotify.Playback
                 case "state_change":
                     HandleStateChange(eventData);
                     break;
+                case "position_change":
+                    HandlePositionChange(eventData);
+                    break;
+
             }
+        }
+
+        private void HandlePositionChange(JObject data)
+        {
+            Position = data.Value<int>("position");
+            TrackPositionChanged.Invoke(this, new EventArgs());
         }
 
         private void HandleStateChange(JObject data)

@@ -66,8 +66,8 @@
             </Grid.ColumnDefinitions>
             <Image x:Name="ThumbnailImage" Source="Assets/UnknownSong.png" Grid.Column="0"/>
             <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" Margin="25,0,0,0">
-                <TextBlock x:Name="SongLabel" Text="No track playing" FontSize="20" Style="{ThemeResource TitleTextBlockStyle}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                <TextBlock x:Name="ArtistLabel" Text="Fancy artist" FontSize="17" Style="{ThemeResource SubtitleTextBlockStyle}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                <TextBlock x:Name="SongLabel" Text="No track" FontSize="20" Style="{ThemeResource TitleTextBlockStyle}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                <TextBlock x:Name="ArtistLabel" Text="playing" FontSize="17" Style="{ThemeResource SubtitleTextBlockStyle}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
             </StackPanel>
 
             <WebView x:Name="PlaybackContainer" DOMContentLoaded="PlaybackContainer_DOMContentLoaded" ScriptNotify="PlaybackContainer_ScriptNotify" Visibility="Collapsed"/>
