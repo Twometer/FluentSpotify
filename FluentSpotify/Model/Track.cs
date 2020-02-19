@@ -38,6 +38,8 @@ namespace FluentSpotify.Model
 
         public IEnumerable<ImageInfo> Images { get; private set; }
 
+        public string Uri => "spotify:track:" + Id;
+
         public static Track Parse(JObject obj)
         {
             var trackObj = obj["track"];

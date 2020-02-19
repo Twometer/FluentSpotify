@@ -130,7 +130,6 @@ namespace FluentSpotify
                 ThumbnailImage.Source = new BitmapImage() { UriSource = new Uri(image.Url, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(ThumbnailImage.Width), DecodePixelHeight = (int)Math.Floor(ThumbnailImage.Height) };
             }
             PlaybackFontIcon.Glyph = pb.IsPlaying ? ((char)59241).ToString() :  ((char)59240).ToString();
-            
         }
 
         private void SwitchThemeButton_Tapped(object sender, TappedRoutedEventArgs e)

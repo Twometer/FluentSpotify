@@ -1,6 +1,7 @@
 ﻿using FluentSpotify.API;
 using FluentSpotify.Model;
 using FluentSpotify.Util;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -53,14 +54,14 @@ namespace FluentSpotify.Playback
             await container.RunScript("window.player.resume();");
         }
 
-        public Task PlayTrack(Track track)
+        public Task PlayTrack(Playlist context, int trackIdx)
         {
-            return PlayUri("spotify:track:" + track.Id);
+            return SendPlayRequest(new PlayTrackRequest(context.Uri, new OffsetWrapper(trackIdx)));
         }
 
         public Task PlayPlaylist(Playlist playlist)
         {
-            return PlayUri("spotify:playlist:" + playlist.Id);
+            return SendPlayRequest(new PlayListRequest(playlist.Uri));
         }
 
         public async Task Previous()
@@ -98,7 +99,6 @@ namespace FluentSpotify.Playback
                 case "position_change":
                     HandlePositionChange(eventData);
                     break;
-
             }
         }
 
@@ -124,10 +124,9 @@ namespace FluentSpotify.Playback
             PlaybackStateChanged.Invoke(this, new EventArgs());
         }
 
-        private async Task PlayUri(string uri)
+        private async Task SendPlayRequest(object obj)
         {
-            var body = $"{{ \"uris\": [ \"{uri}\" ] }}";
-
+            var body = JsonConvert.SerializeObject(obj);
             var request = WebRequest.CreateHttp("https://api.spotify.com/v1/me/player/play?device_id=" + playerId);
             request.Method = "PUT";
             request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + Spotify.AccessToken);
@@ -142,21 +141,37 @@ namespace FluentSpotify.Playback
             await request.GetResponseAsync();
         }
 
-        private class PlaybackRequest
+        private class PlayListRequest
         {
+            [JsonProperty("context_uri")]
             public string ContextUri { get; set; }
 
-            public List<string> Uris { get; set; } = new List<string>();
-
-
+            public PlayListRequest(string contextUri)
+            {
+                ContextUri = contextUri;
+            }
         }
 
-        private class PlaybackOffset
+        private class PlayTrackRequest : PlayListRequest
         {
-            public string Uri { get; set; }
+            [JsonProperty("offset")]
+            public OffsetWrapper Offset { get; set; }
 
-            public int Positon { get; set; }
+            public PlayTrackRequest(string contextUri, OffsetWrapper offset) : base(contextUri)
+            {
+                Offset = offset;
+            }
         }
 
+        private class OffsetWrapper
+        {
+            [JsonProperty("position")]
+            public int Position { get; set; }
+
+            public OffsetWrapper(int position)
+            {
+                Position = position;
+            }
+        }
     }
 }

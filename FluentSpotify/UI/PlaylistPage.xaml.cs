@@ -71,9 +71,8 @@ namespace FluentSpotify.UI
 
         private void TrackList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var track = e.ClickedItem as Track;
-            if (track != null)
-                Spotify.Playback.PlayTrack(track);
+            if (e.ClickedItem is Track)
+                Spotify.Playback.PlayTrack(playlist, TrackList.Items.IndexOf(e.ClickedItem));
         }
     }
 }

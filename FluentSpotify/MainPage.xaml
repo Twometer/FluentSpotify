@@ -48,6 +48,7 @@
             </muxc:NavigationView.MenuItems>
             <muxc:NavigationView.PaneFooter>
                 <StackPanel Orientation="Vertical">
+                    <muxc:NavigationViewItemSeparator/>
                     <muxc:NavigationViewItem x:Name="SwitchThemeButton" Tag="theme" Content="Switch Theme" Icon="View" Tapped="SwitchThemeButton_Tapped"/>
                     <muxc:NavigationViewItem x:Name="UserItem" Tag="user" Content="User Name" Icon="Contact" Tapped="UserItem_Tapped"/>
                 </StackPanel>

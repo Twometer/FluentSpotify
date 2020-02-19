@@ -26,6 +26,8 @@ namespace FluentSpotify.Model
 
         public IEnumerable<ImageInfo> Images { get; private set; }
 
+        public string Uri => "spotify:playlist:" + Id;
+
         public static Playlist Parse(JObject json)
         {
             return new Playlist()
