@@ -1,6 +1,8 @@
 ﻿using FluentSpotify.API;
 using FluentSpotify.Model;
+using FluentSpotify.Playback;
 using FluentSpotify.UI;
+using FluentSpotify.Util;
 using FluentSpotify.Web;
 using System;
 using System.Collections.Generic;
@@ -32,6 +34,8 @@ namespace FluentSpotify
     public sealed partial class MainPage : Page
     {
         private IDictionary<string, Playlist> loadedPlaylists = new Dictionary<string, Playlist>();
+
+        private SpotifyPlayer player;
 
         private string lastNav;
 
@@ -90,6 +94,11 @@ namespace FluentSpotify
             var playlists = await Spotify.Account.GetPlaylists();
             foreach (var list in playlists)
                 AddPlaylist(list);
+
+            PlaybackContainer.Navigate(new Uri("ms-appx-web:///Assets/DrmContainer.html", UriKind.Absolute));
+            player = new SpotifyPlayer(PlaybackContainer);
+
+            Spotify.Playback = player;
         }
 
         private void SwitchThemeButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -114,6 +123,31 @@ namespace FluentSpotify
             {
                 Spotify.Auth.Logout();
             }
+        }
+
+        private void PlaybackContainer_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
+        {
+            player.Initialize();
+        }
+
+        private void PrevButton_Click(object sender, RoutedEventArgs e)
+        {
+            player.Previous();
+        }
+
+        private void PlayPauseButton_Click(object sender, RoutedEventArgs e)
+        {
+            player.Play();
+        }
+
+        private void NextButton_Click(object sender, RoutedEventArgs e)
+        {
+            player.Next();
+        }
+
+        private void VolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            player?.SetVolume(e.NewValue / 100.0);
         }
     }
 }

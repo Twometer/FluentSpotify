@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
 
 namespace FluentSpotify.Util
 {
@@ -27,6 +28,11 @@ namespace FluentSpotify.Util
                 return fallback;
             else
                 return val.ToObject<T>();
+        }
+
+        public static async Task<string> RunScript(this WebView webView, string js)
+        {
+            return await webView.InvokeScriptAsync("eval", new string[] { js });
         }
 
     }

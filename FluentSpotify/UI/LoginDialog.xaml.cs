@@ -1,4 +1,5 @@
 ﻿using FluentSpotify.API;
+using FluentSpotify.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;

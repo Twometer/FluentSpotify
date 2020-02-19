@@ -11,6 +11,8 @@ namespace FluentSpotify.Web
 {
     public class Request
     {
+        public const string UserAgent = "FluentSpotify/1.00";
+
         private string endpoint;
 
         private string query;
@@ -101,7 +103,7 @@ namespace FluentSpotify.Web
         private HttpWebRequest BuildRequest(string url)
         {
             var req = WebRequest.CreateHttp(url);
-            req.UserAgent = "FluentSpotify/1.00";
+            req.UserAgent = UserAgent;
             if (!string.IsNullOrEmpty(authorization))
                 req.Headers.Add(HttpRequestHeader.Authorization, authorization);
             return req;

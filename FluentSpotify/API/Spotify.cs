@@ -1,4 +1,5 @@
-﻿using FluentSpotify.Web;
+﻿using FluentSpotify.Playback;
+using FluentSpotify.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -16,6 +17,8 @@ namespace FluentSpotify.API
         public static AccountApi Account { get; } = new AccountApi();
 
         public static TracksApi Tracks { get; } = new TracksApi();
+
+        public static SpotifyPlayer Playback { get; set; }
 
         public static string AccessToken => Auth.KeyStore.AccessToken;
 

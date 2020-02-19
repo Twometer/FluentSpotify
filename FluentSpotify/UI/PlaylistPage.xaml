@@ -37,12 +37,12 @@
             <TextBlock x:Name="MetaLabel" Grid.Row="4" Text="98 songs" VerticalAlignment="Bottom" Style="{ThemeResource SubtitleTextBlockStyle}"/>
 
             <StackPanel Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
-                <Button x:Name="PlayButton" Content="Play all" Margin="0,0,10,0" Width="96" Style="{ThemeResource AccentButtonStyle}"/>
-                <Button x:Name="FollowButton" Content="Unfollow" Margin="10,0,0,0" Width="96"/>
+                <Button x:Name="PlayButton" Content="Play all" Margin="0,0,10,0" Width="96" Style="{ThemeResource AccentButtonStyle}" Click="PlayButton_Click"/>
+                <Button x:Name="FollowButton" Content="Follow" Margin="10,0,0,0" Width="96"/>
             </StackPanel>
         </Grid>
 
-        <ListView x:Name="TrackList" Grid.Row="1" Grid.ColumnSpan="3" Margin="96,35.5" HorizontalContentAlignment="Stretch">
+        <ListView x:Name="TrackList" Grid.Row="1" Grid.ColumnSpan="3" Margin="96,35.5" HorizontalContentAlignment="Stretch" ItemClick="TrackList_ItemClick" IsItemClickEnabled="True">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>

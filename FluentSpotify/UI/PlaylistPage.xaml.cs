@@ -25,6 +25,8 @@ namespace FluentSpotify.UI
 
     public sealed partial class PlaylistPage : Page
     {
+        private Playlist playlist;
+
         private PagedRequest<Track> request;
 
         public PlaylistPage()
@@ -36,6 +38,8 @@ namespace FluentSpotify.UI
         {
             base.OnNavigatedTo(e);
             var playlist = e.Parameter as Playlist;
+            this.playlist = playlist;
+
             HeaderLabel.Text = playlist.Name;
             DescLabel.Text = playlist.Description;
             DescLabel.Visibility = string.IsNullOrWhiteSpace(playlist.Description) ? Visibility.Collapsed : Visibility.Visible;
@@ -58,6 +62,18 @@ namespace FluentSpotify.UI
                 foreach (var track in tracks)
                     TrackList.Items.Add(track);
             }
+        }
+
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            Spotify.Playback.PlayPlaylist(playlist);
+        }
+
+        private void TrackList_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var track = e.ClickedItem as Track;
+            if (track != null)
+                Spotify.Playback.PlayTrack(track);
         }
     }
 }

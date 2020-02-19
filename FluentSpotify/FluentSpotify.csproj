@@ -131,7 +131,7 @@
     <Compile Include="Model\ImageInfo.cs" />
     <Compile Include="Model\Playlist.cs" />
     <Compile Include="Model\Track.cs" />
-    <Compile Include="NavigationTransistionInfo.cs" />
+    <Compile Include="Playback\SpotifyPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\LoginDialog.xaml.cs">
       <DependentUpon>LoginDialog.xaml</DependentUpon>
@@ -152,6 +152,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\DrmContainer.html" />
     <Content Include="Assets\UnknownSong.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
