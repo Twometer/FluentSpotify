@@ -24,22 +24,25 @@ namespace FluentSpotify.API
         {
             // Request access to almost all scopes so that we can provide
             // a fully featured Spotify experience
-            var scopes = string.Join(' ',
-                "streaming",
-                "ugc-image-upload",
-                "user-read-playback-state",
-                "playlist-read-collaborative",
-                "user-modify-playback-state",
-                "playlist-modify-public",
-                "user-library-modify",
+            var scopes = string.Join(' ', 
+                "streaming", 
                 "user-top-read",
+                "user-read-email", 
+                "user-read-private",
                 "user-read-currently-playing",
-                "playlist-read-private",
-                "user-follow-read",
                 "user-read-recently-played",
-                "playlist-modify-private",
-                "user-follow-modify",
-                "user-library-read");
+                "user-read-playback-state", 
+                "user-modify-playback-state",
+                "user-library-read",
+                "user-library-modify", 
+                "user-follow-modify", 
+                "user-follow-read",
+                "playlist-read-private",
+                "playlist-read-collaborative", 
+                "playlist-modify-public",
+                "playlist-modify-private", 
+                "ugc-image-upload"
+            );
 
             return Request.New("https://accounts.spotify.com/authorize")
                 .AddParameter("client_id", ClientId)
@@ -108,6 +111,12 @@ namespace FluentSpotify.API
             if (value == null) return;
 
             KeyStore = JsonConvert.DeserializeObject<KeyStore>(value);
+        }
+
+        public void Logout()
+        {
+            var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            settings.Values["keyStore"] = null;
         }
 
     }

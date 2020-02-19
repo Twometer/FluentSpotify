@@ -99,5 +99,21 @@ namespace FluentSpotify
             else
                 RequestedTheme = ElementTheme.Light;
         }
+
+        private async void UserItem_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var dialog = new ContentDialog()
+            {
+                Title = "Log out?",
+                Content = "Do you want to log out of Fluent Spotify?",
+                PrimaryButtonText = "Yes",
+                SecondaryButtonText = "No"
+            };
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                Spotify.Auth.Logout();
+            }
+        }
     }
 }

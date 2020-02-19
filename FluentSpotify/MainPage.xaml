@@ -49,7 +49,7 @@
             <muxc:NavigationView.PaneFooter>
                 <StackPanel Orientation="Vertical">
                     <muxc:NavigationViewItem x:Name="SwitchThemeButton" Tag="theme" Content="Switch Theme" Icon="View" Tapped="SwitchThemeButton_Tapped"/>
-                    <muxc:NavigationViewItem x:Name="UserItem" Tag="user" Content="User Name" Icon="Contact"/>
+                    <muxc:NavigationViewItem x:Name="UserItem" Tag="user" Content="User Name" Icon="Contact" Tapped="UserItem_Tapped"/>
                 </StackPanel>
             </muxc:NavigationView.PaneFooter>
 
