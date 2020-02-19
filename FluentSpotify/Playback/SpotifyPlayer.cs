@@ -54,9 +54,14 @@ namespace FluentSpotify.Playback
             await container.RunScript("window.player.resume();");
         }
 
+        public Task PlayTrack(Track track)
+        {
+            return SendPlayRequest(new PlayTrackRequest(new List<string>() { track.Uri }));
+        }
+
         public Task PlayTrack(Playlist context, int trackIdx)
         {
-            return SendPlayRequest(new PlayTrackRequest(context.Uri, new OffsetWrapper(trackIdx)));
+            return SendPlayRequest(new PlayListItemRequest(context.Uri, new OffsetWrapper(trackIdx)));
         }
 
         public Task PlayPlaylist(Playlist playlist)
@@ -77,7 +82,6 @@ namespace FluentSpotify.Playback
         public async Task TogglePlayback()
         {
             await container.RunScript("window.player.togglePlay();");
-            IsPlaying = !IsPlaying;
             PlaybackStateChanged.Invoke(this, new EventArgs());
         }
 
@@ -152,14 +156,25 @@ namespace FluentSpotify.Playback
             }
         }
 
-        private class PlayTrackRequest : PlayListRequest
+        private class PlayListItemRequest : PlayListRequest
         {
             [JsonProperty("offset")]
             public OffsetWrapper Offset { get; set; }
 
-            public PlayTrackRequest(string contextUri, OffsetWrapper offset) : base(contextUri)
+            public PlayListItemRequest(string contextUri, OffsetWrapper offset) : base(contextUri)
             {
                 Offset = offset;
+            }
+        }
+
+        private class PlayTrackRequest
+        {
+            [JsonProperty("uris")]
+            public List<string> Uris { get; }
+
+            public PlayTrackRequest(List<string> uris)
+            {
+                Uris = uris;
             }
         }
 
