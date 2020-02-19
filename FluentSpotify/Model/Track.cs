@@ -55,5 +55,17 @@ namespace FluentSpotify.Model
             return result;
         }
 
+        public static Track ParseMinimal(JObject obj)
+        {
+            var result = new Track
+            {
+                Id = obj.Value<string>("id"),
+                Name = obj.Value<string>("name"),
+                Duration = TimeSpan.FromMilliseconds(obj.Value<int>("duration_ms")),
+                Artists = (obj["artists"] as JArray)?.Select(artist => artist.Value<string>("name")).ToArray()
+            };
+            return result;
+        }
+
     }
 }

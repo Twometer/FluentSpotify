@@ -4,6 +4,7 @@ using FluentSpotify.Playback;
 using FluentSpotify.UI;
 using FluentSpotify.Util;
 using FluentSpotify.Web;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -99,6 +100,18 @@ namespace FluentSpotify
             player = new SpotifyPlayer(PlaybackContainer);
 
             Spotify.Playback = player;
+
+            Spotify.Playback.PlaybackStateChanged += Playback_PlaybackStateChanged;
+        }
+
+        private void Playback_PlaybackStateChanged(object sender, EventArgs e)
+        {
+            var pb = Spotify.Playback;
+
+            SongLabel.Text = pb.CurrentTrack.Name;
+            ArtistLabel.Text = pb.CurrentTrack.ArtistsString;
+            TotalTimeLabel.Text = pb.CurrentTrack.DurationString;
+            PlaybackFontIcon.Glyph = pb.IsPlaying ? ((char)59241).ToString() :  ((char)59240).ToString();
         }
 
         private void SwitchThemeButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -137,7 +150,7 @@ namespace FluentSpotify
 
         private void PlayPauseButton_Click(object sender, RoutedEventArgs e)
         {
-            player.Play();
+            player.TogglePlayback();
         }
 
         private void NextButton_Click(object sender, RoutedEventArgs e)
@@ -148,6 +161,12 @@ namespace FluentSpotify
         private void VolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             player?.SetVolume(e.NewValue / 100.0);
+        }
+
+        private void PlaybackContainer_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+            var val = JObject.Parse(e.Value);
+            player.HandleEvent(val);
         }
     }
 }

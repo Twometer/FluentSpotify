@@ -66,12 +66,13 @@
             </Grid.ColumnDefinitions>
             <Image x:Name="ThumbnailImage" Source="Assets/UnknownSong.png" Grid.Column="0"/>
             <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" Margin="25,0,0,0">
-                <TextBlock x:Name="SongLabel" Text="Blinding Lights" FontSize="20" Style="{ThemeResource TitleTextBlockStyle}"/>
-                <TextBlock x:Name="ArtistLabel" Text="The Weeknd" FontSize="17" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                <TextBlock x:Name="SongLabel" Text="No track playing" FontSize="20" Style="{ThemeResource TitleTextBlockStyle}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                <TextBlock x:Name="ArtistLabel" Text="Fancy artist" FontSize="17" Style="{ThemeResource SubtitleTextBlockStyle}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
             </StackPanel>
 
-            <WebView x:Name="PlaybackContainer" DOMContentLoaded="PlaybackContainer_DOMContentLoaded" Visibility="Collapsed"/>
+            <WebView x:Name="PlaybackContainer" DOMContentLoaded="PlaybackContainer_DOMContentLoaded" ScriptNotify="PlaybackContainer_ScriptNotify" Visibility="Collapsed"/>
 
+            <!-- Play: 59240 -->
             <!-- Pause: 59241 -->
             <Grid Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
@@ -91,7 +92,7 @@
                     </AppBarButton>
                     <AppBarButton x:Name="PlayPauseButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42" Click="PlayPauseButton_Click">
                         <AppBarButton.Icon>
-                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59240;"/>
+                            <FontIcon x:Name="PlaybackFontIcon" FontFamily="Segoe MDL2 Assets" Glyph="&#59240;"/>
                         </AppBarButton.Icon>
                     </AppBarButton>
                     <AppBarButton x:Name="NextButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42" Click="NextButton_Click">
@@ -100,9 +101,9 @@
                         </AppBarButton.Icon>
                     </AppBarButton>
                 </CommandBar>
-                <TextBlock x:Name="ElapsedTimeLabel" Grid.Column="0" Grid.Row="2" Margin="10,5,10,5">1:34</TextBlock>
+                <TextBlock x:Name="ElapsedTimeLabel" Grid.Column="0" Grid.Row="2" Margin="10,5,10,5">0:00</TextBlock>
                 <Slider x:Name="TimeSlider" Grid.Column="1" Grid.Row="2"></Slider>
-                <TextBlock x:Name="TotalTimeLabel" Grid.Column="2" Grid.Row="2" Margin="10,5,10,5">3:21</TextBlock>
+                <TextBlock x:Name="TotalTimeLabel" Grid.Column="2" Grid.Row="2" Margin="10,5,10,5">0:00</TextBlock>
             </Grid>
             <StackPanel Orientation="Horizontal" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Height="42">
                 <AppBarButton x:Name="MuteButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42" Margin="0,0,20,0">

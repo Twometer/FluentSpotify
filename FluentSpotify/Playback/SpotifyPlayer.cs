@@ -1,6 +1,7 @@
 ﻿using FluentSpotify.API;
 using FluentSpotify.Model;
 using FluentSpotify.Util;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,6 +16,13 @@ namespace FluentSpotify.Playback
 {
     public class SpotifyPlayer
     {
+        public bool IsPlaying { get; private set; }
+
+        public Track CurrentTrack { get; private set; }
+
+        public event EventHandler PlaybackStateChanged;
+
+
         private WebView container;
 
         private string playerId;
@@ -61,11 +69,44 @@ namespace FluentSpotify.Playback
             await container.RunScript("window.player.nextTrack();");
         }
 
+        public async Task TogglePlayback()
+        {
+            await container.RunScript("window.player.togglePlay();");
+        }
+
         public async Task SetVolume(double vol)
         {
             await container.RunScript($"window.player.setVolume({vol.ToString(CultureInfo.InvariantCulture)});");
         }
 
+        public void HandleEvent(JObject eventObj)
+        {
+            var eventType = eventObj.Value<string>("eventType");
+            var eventData = eventObj["eventData"] as JObject;
+
+            switch (eventType)
+            {
+                case "state_change":
+                    HandleStateChange(eventData);
+                    break;
+            }
+        }
+
+        private void HandleStateChange(JObject data)
+        {
+            if (data.Type == JTokenType.Null)
+            {
+                IsPlaying = false;
+                CurrentTrack = null;
+            }
+            else
+            {
+                IsPlaying = true;
+                CurrentTrack = Track.ParseMinimal(data);
+            }
+
+            PlaybackStateChanged.Invoke(this, new EventArgs());
+        }
 
         private async Task PlayUri(string uri)
         {
@@ -83,6 +124,22 @@ namespace FluentSpotify.Playback
                 writer.Write(body);
             }
             await request.GetResponseAsync();
+        }
+
+        private class PlaybackRequest
+        {
+            public string ContextUri { get; set; }
+
+            public List<string> Uris { get; set; } = new List<string>();
+
+
+        }
+
+        private class PlaybackOffset
+        {
+            public string Uri { get; set; }
+
+            public int Positon { get; set; }
         }
 
     }
