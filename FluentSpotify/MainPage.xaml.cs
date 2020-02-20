@@ -7,6 +7,7 @@ using FluentSpotify.Web;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -34,7 +35,9 @@ namespace FluentSpotify
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private IDictionary<string, Playlist> loadedPlaylists = new Dictionary<string, Playlist>();
+        private readonly ThrottledExecution throttledExecution = new ThrottledExecution(TimeSpan.FromMilliseconds(1000));
+
+        private readonly IDictionary<string, Playlist> loadedPlaylists = new Dictionary<string, Playlist>();
 
         private SpotifyPlayer player;
 
@@ -103,6 +106,8 @@ namespace FluentSpotify
 
             Spotify.Playback.PlaybackStateChanged += Playback_PlaybackStateChanged;
             Spotify.Playback.TrackPositionChanged += Playback_TrackPositionChanged;
+
+            Debug.WriteLine("Initialized");
         }
 
         private void Playback_TrackPositionChanged(object sender, EventArgs e)
@@ -129,7 +134,7 @@ namespace FluentSpotify
                 var image = pb.CurrentTrack.Images.FindByResolution(300);
                 ThumbnailImage.Source = new BitmapImage() { UriSource = new Uri(image.Url, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(ThumbnailImage.Width), DecodePixelHeight = (int)Math.Floor(ThumbnailImage.Height) };
             }
-            PlaybackFontIcon.Glyph = pb.IsPlaying ? ((char)59241).ToString() :  ((char)59240).ToString();
+            PlaybackFontIcon.Glyph = pb.IsPlaying ? ((char)59241).ToString() : ((char)59240).ToString();
         }
 
         private void SwitchThemeButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -189,7 +194,44 @@ namespace FluentSpotify
 
         private void MoreButton_Click(object sender, RoutedEventArgs e)
         {
-            
+
+        }
+
+        private void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (args.ChosenSuggestion != null)
+            {
+                var track = args.ChosenSuggestion as Track;
+                player.PlayTrack(track);
+            }
+            else
+            {
+                var query = args.QueryText;
+            }
+        }
+
+        private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                var query = sender.Text;
+                if (query.Length < 3)
+                {
+                    sender.ItemsSource = null;
+                    return;
+                }
+
+                throttledExecution.Run(async () =>
+                {
+                    var results = await Spotify.Search.Search(query, 5);
+                    sender.ItemsSource = results;
+                });
+            }
+        }
+
+        private void SearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+
         }
     }
 }

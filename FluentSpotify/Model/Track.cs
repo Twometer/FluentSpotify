@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using FluentSpotify.Util;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -40,6 +41,8 @@ namespace FluentSpotify.Model
 
         public string Uri => "spotify:track:" + Id;
 
+        public string ThumbnailUrl => Images.FindByResolution(64).Url;
+
         public static Track Parse(JObject obj)
         {
             var trackObj = obj["track"];
@@ -70,6 +73,11 @@ namespace FluentSpotify.Model
                 Images = (obj["album"]["images"] as JArray)?.Select(imgObj => ImageInfo.Parse((JObject)imgObj))
             };
             return result;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
 
     }

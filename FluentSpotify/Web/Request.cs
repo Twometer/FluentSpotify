@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using FluentSpotify.Util;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -62,18 +63,26 @@ namespace FluentSpotify.Web
 
         public PagedRequest<T> GetPaged<T>(Func<JObject, T> mapper)
         {
-            return new PagedRequest<T>(endpoint, authorization, mapper);
+            return new PagedRequest<T>(ToUrl(), authorization, mapper);
         }
 
         public async Task<string> Get()
         {
-            var request = BuildRequest(ToUrl());
-            var response = await request.GetResponseAsync();
-            var stream = response.GetResponseStream();
-
-            using (var reader = new StreamReader(stream))
+            try
             {
-                return reader.ReadToEnd();
+                var request = BuildRequest(ToUrl());
+                var response = await request.GetResponseAsync();
+                var stream = response.GetResponseStream();
+
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            catch (WebException e)
+            {
+                e.PrintStackTrace(query);
+                throw e;
             }
         }
 

@@ -211,15 +211,7 @@ namespace FluentSpotify.Playback
             }
             catch (WebException e)
             {
-                Debug.WriteLine("=== Playback Error ===");
-                Debug.WriteLine(" Body: " + body);
-                Debug.WriteLine(" Exception: ");
-                Debug.WriteLine(e.ToString());
-                Debug.WriteLine(" Server Response: ");
-                using (var reader = new StreamReader(e.Response.GetResponseStream()))
-                {
-                    Debug.WriteLine(await reader.ReadToEndAsync());
-                }
+                e.PrintStackTrace("Playback failed", body);
             }
         }
 
