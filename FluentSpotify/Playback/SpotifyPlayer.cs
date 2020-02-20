@@ -150,8 +150,7 @@ namespace FluentSpotify.Playback
 
         public async Task TogglePlayback()
         {
-            await container.RunScript("window.player.togglePlay();");
-            PlaybackStateChanged.Invoke(this, new EventArgs());
+            await container.RunScript("TogglePlay();");
         }
 
         public async Task SetVolume(double vol)
