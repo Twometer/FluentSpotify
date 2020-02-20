@@ -118,6 +118,7 @@
   <ItemGroup>
     <Compile Include="API\AccountApi.cs" />
     <Compile Include="API\AuthApi.cs" />
+    <Compile Include="API\PlaylistApi.cs" />
     <Compile Include="API\SearchApi.cs" />
     <Compile Include="API\TracksApi.cs" />
     <Compile Include="Model\Account.cs" />
@@ -143,6 +144,9 @@
     <Compile Include="UI\PercentageToTimeConverter.cs" />
     <Compile Include="UI\PlaylistPage.xaml.cs">
       <DependentUpon>PlaylistPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SettingsPage.xaml.cs">
+      <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WindowsTheme.cs" />
     <Compile Include="Util\Base64.cs" />
@@ -183,6 +187,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\PlaylistPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\SettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

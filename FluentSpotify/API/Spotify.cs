@@ -22,6 +22,8 @@ namespace FluentSpotify.API
 
         public static SearchApi Search { get; } = new SearchApi();
 
+        public static PlaylistApi Playlist { get; } = new PlaylistApi();
+
         public static string AccessToken => Auth.KeyStore.AccessToken;
 
 

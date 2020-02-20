@@ -34,7 +34,7 @@ namespace FluentSpotify.UI
             this.InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             var playlist = e.Parameter as Playlist;
@@ -52,6 +52,9 @@ namespace FluentSpotify.UI
 
             request = Spotify.Tracks.GetTracks(playlist.Id);
             LoadMore();
+
+            var isFollowing = await Spotify.Playlist.IsFollowing(playlist);
+            FollowButton.Content = isFollowing ? "Unfollow" : "Follow";
         }
 
         private async void LoadMore()
