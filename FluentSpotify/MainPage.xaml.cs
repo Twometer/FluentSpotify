@@ -56,6 +56,8 @@ namespace FluentSpotify
 
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
+
+            ContentFrame.Navigate(typeof(HomePage));
         }
 
         private void AddPlaylist(Playlist playlist)
@@ -83,9 +85,14 @@ namespace FluentSpotify
                 var id = tag.Substring("list-".Length);
                 var playlist = loadedPlaylists[id];
                 ContentFrame.Navigate(typeof(PlaylistPage), playlist, args.RecommendedNavigationTransitionInfo);
-            } else if(tag == "settings")
+            }
+            else if (tag == "settings")
             {
                 ContentFrame.Navigate(typeof(SettingsPage));
+            }
+            else if (tag == "home")
+            {
+                ContentFrame.Navigate(typeof(HomePage));
             }
 
             lastNav = tag;
