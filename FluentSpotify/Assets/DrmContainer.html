@@ -57,13 +57,11 @@
 
                 player.getCurrentState().then(state => {
 
-                    if (state == null)
-                        return; 
-
                     let event = {
-                        eventType: "position_change",
+                        eventType: "status_update",
                         eventData: {
-                            position: state.position
+                            position: state != null ? state.position : 0,
+                            paused: state != null && state.paused
                         }
                     };
 

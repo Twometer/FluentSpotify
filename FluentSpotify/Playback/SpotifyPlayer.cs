@@ -19,7 +19,7 @@ namespace FluentSpotify.Playback
 {
     public class SpotifyPlayer
     {
-        public bool IsPlaying { get; private set; }
+        public bool IsPlaying => CurrentTrack != null && !isSoftwarePause;
 
         public Track CurrentTrack { get; private set; }
 
@@ -29,6 +29,7 @@ namespace FluentSpotify.Playback
 
         public event EventHandler TrackPositionChanged;
 
+        private bool isSoftwarePause;
 
         private WebView container;
 
@@ -163,15 +164,16 @@ namespace FluentSpotify.Playback
                 case "state_change":
                     HandleStateChange(eventData);
                     break;
-                case "position_change":
-                    HandlePositionChange(eventData);
+                case "status_update":
+                    HandleStatusUpdate(eventData);
                     break;
             }
         }
 
-        private void HandlePositionChange(JObject data)
+        private void HandleStatusUpdate(JObject data)
         {
             Position = data.Value<int>("position");
+            isSoftwarePause = data.Value<bool>("paused");
             TrackPositionChanged.Invoke(this, new EventArgs());
         }
 
@@ -179,12 +181,10 @@ namespace FluentSpotify.Playback
         {
             if (data.Type == JTokenType.Null)
             {
-                IsPlaying = false;
                 CurrentTrack = null;
             }
             else
             {
-                IsPlaying = true;
                 CurrentTrack = Track.ParseMinimal(data);
             }
 
