@@ -72,6 +72,8 @@ namespace FluentSpotify
         private void NavView_ItemInvoked(MS.NavigationView sender, MS.NavigationViewItemInvokedEventArgs args)
         {
             var tag = args.InvokedItemContainer.Tag as string;
+            if (args.IsSettingsInvoked)
+                tag = "settings";
 
             if (tag == lastNav)
                 return;
@@ -81,6 +83,9 @@ namespace FluentSpotify
                 var id = tag.Substring("list-".Length);
                 var playlist = loadedPlaylists[id];
                 ContentFrame.Navigate(typeof(PlaylistPage), playlist, args.RecommendedNavigationTransitionInfo);
+            } else if(tag == "settings")
+            {
+                ContentFrame.Navigate(typeof(SettingsPage));
             }
 
             lastNav = tag;

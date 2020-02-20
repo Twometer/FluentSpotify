@@ -8,7 +8,13 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <StackPanel Margin="24">
 
-    </Grid>
+
+        <TextBlock Text="About this app" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,24"/>
+        <TextBlock Text="Fluent Spotify 1.00"/>
+        <TextBlock Text="(c) 2019 Twometer Apps" Margin="0,0,0,24"/>
+        <HyperlinkButton Content="Privacy Statement" Margin="0,0,0,28"/>
+        <Button Content="Give Feedback"/>
+    </StackPanel>
 </Page>
