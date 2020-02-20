@@ -115,7 +115,7 @@
 
                 <Slider x:Name="VolumeSlider" VerticalAlignment="Center" Width="120" Value="60" ValueChanged="VolumeSlider_ValueChanged"/>
 
-                <AppBarButton x:Name="MoreButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42" Margin="20,0,0,0">
+                <AppBarButton x:Name="MoreButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42" Margin="20,0,0,0" Click="MoreButton_Click">
                     <AppBarButton.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59154;"/>
                     </AppBarButton.Icon>

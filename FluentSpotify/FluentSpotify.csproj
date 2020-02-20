@@ -131,6 +131,7 @@
     <Compile Include="Model\ImageInfo.cs" />
     <Compile Include="Model\Playlist.cs" />
     <Compile Include="Model\Track.cs" />
+    <Compile Include="Playback\RepeatMode.cs" />
     <Compile Include="Playback\SpotifyPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\LoginDialog.xaml.cs">

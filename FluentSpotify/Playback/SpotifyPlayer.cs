@@ -1,10 +1,12 @@
 ﻿using FluentSpotify.API;
 using FluentSpotify.Model;
 using FluentSpotify.Util;
+using FluentSpotify.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -69,6 +71,67 @@ namespace FluentSpotify.Playback
             return SendPlayRequest(new PlayListRequest(playlist.Uri));
         }
 
+        /* public Task PlayCollection()
+        {
+            return SendPlayRequest(new PlayListRequest($"spotify:user:{Spotify.Account.CurrentAccount.Id}:collection"));
+        }
+
+        public Task PlayCollectionTrack(int trackId)
+        {
+            return SendPlayRequest(new PlayListItemRequest($"spotify:user:{Spotify.Account.CurrentAccount.Id}:collection", new OffsetWrapper(trackId)));
+        } */
+
+        public async Task PlayCollection()
+        {
+            // TODO For the internal API we require an open.spotify.com AccessToken
+            try
+            {
+                var url = $"https://gew-spclient.spotify.com/connect-state/v1/player/command/from/{playerId}/to/{playerId}";
+                var accountId = Spotify.Account.CurrentAccount.Id;
+                var payload = "{\"command\":{\"context\":{\"uri\":\"spotify:user:" + accountId + ":collection\",\"url\":\"context://spotify:user:" + accountId + ":collection\",\"metadata\":{}},\"play_origin\":{\"feature_identifier\":\"harmony\",\"feature_version\":\"3.23.0-a0f8ef4\"},\"options\":{\"skip_to\":{\"track_index\":0},\"license\":\"premium\",\"player_options_override\":{\"repeating_track\":false,\"repeating_context\":false}},\"endpoint\":\"play\"}}";
+
+                var request = WebRequest.CreateHttp(url);
+                request.Method = "POST";
+                request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + Spotify.AccessToken);
+                request.ContentLength = Encoding.UTF8.GetByteCount(payload);
+                request.ContentType = "application/json";
+                request.Headers.Add("Origin", "https://open.spotify.com");
+                request.Referer = "https://open.spotify.com/collection/tracks";
+                request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Safari/537.36";
+
+                var reqStream = await request.GetRequestStreamAsync();
+                using (var writer = new StreamWriter(reqStream))
+                {
+                    writer.Write(payload);
+                }
+                var resp = await request.GetResponseAsync();
+
+                using (var reader = new StreamReader(resp.GetResponseStream()))
+                {
+                    Debug.WriteLine(await reader.ReadToEndAsync());
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+                throw e;
+            }
+        }
+
+        public async Task SetShuffle(bool shuffle)
+        {
+            await Request.New("https://api.spotify.com/v1/me/player/shuffle")
+                .AddParameter("state", shuffle ? "true" : "false")
+                .Put();
+        }
+
+        public async Task SetRepeat(RepeatMode mode)
+        {
+            await Request.New("https://api.spotify.com/v1/me/player/repeat")
+                .AddParameter("state", mode.ToString().ToLower())
+                .Put();
+        }
+
         public async Task Previous()
         {
             await container.RunScript("window.player.previousTrack();");
@@ -131,18 +194,33 @@ namespace FluentSpotify.Playback
         private async Task SendPlayRequest(object obj)
         {
             var body = JsonConvert.SerializeObject(obj);
-            var request = WebRequest.CreateHttp("https://api.spotify.com/v1/me/player/play?device_id=" + playerId);
-            request.Method = "PUT";
-            request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + Spotify.AccessToken);
-            request.ContentLength = Encoding.UTF8.GetByteCount(body);
-            request.ContentType = "application/json";
-
-            var reqStream = await request.GetRequestStreamAsync();
-            using (var writer = new StreamWriter(reqStream))
+            try
             {
-                writer.Write(body);
+                var request = WebRequest.CreateHttp("https://api.spotify.com/v1/me/player/play?device_id=" + playerId);
+                request.Method = "PUT";
+                request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + Spotify.AccessToken);
+                request.ContentLength = Encoding.UTF8.GetByteCount(body);
+                request.ContentType = "application/json";
+
+                var reqStream = await request.GetRequestStreamAsync();
+                using (var writer = new StreamWriter(reqStream))
+                {
+                    writer.Write(body);
+                }
+                await request.GetResponseAsync();
             }
-            await request.GetResponseAsync();
+            catch (WebException e)
+            {
+                Debug.WriteLine("=== Playback Error ===");
+                Debug.WriteLine(" Body: " + body);
+                Debug.WriteLine(" Exception: ");
+                Debug.WriteLine(e.ToString());
+                Debug.WriteLine(" Server Response: ");
+                using (var reader = new StreamReader(e.Response.GetResponseStream()))
+                {
+                    Debug.WriteLine(await reader.ReadToEndAsync());
+                }
+            }
         }
 
         private class PlayListRequest

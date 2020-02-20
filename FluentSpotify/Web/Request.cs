@@ -77,6 +77,20 @@ namespace FluentSpotify.Web
             }
         }
 
+        public async Task<string> Put()
+        {
+            var request = BuildRequest(ToUrl());
+            request.Method = "PUT";
+            var response = await request.GetResponseAsync();
+            var stream = response.GetResponseStream();
+
+            using (var reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+
         public async Task<string> Post()
         {
             BuildQuery();

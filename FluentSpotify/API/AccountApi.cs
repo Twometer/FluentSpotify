@@ -10,6 +10,8 @@ namespace FluentSpotify.API
 {
     public class AccountApi
     {
+        public Account CurrentAccount { get; private set; }
+
         public async Task<Account> GetAccount()
         {
             await Spotify.Auth.RefreshToken();
@@ -17,7 +19,9 @@ namespace FluentSpotify.API
             var data = await Request.New("https://api.spotify.com/v1/me")
                 .Authenticate("Bearer", Spotify.AccessToken)
                 .Get();
-            return Account.Parse(data);
+            
+            CurrentAccount = Account.Parse(data);
+            return CurrentAccount;
         }
 
         public async Task<IEnumerable<Playlist>> GetPlaylists()

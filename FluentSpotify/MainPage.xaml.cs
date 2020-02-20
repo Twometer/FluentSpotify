@@ -186,5 +186,10 @@ namespace FluentSpotify
             var val = JObject.Parse(e.Value);
             player.HandleEvent(val);
         }
+
+        private void MoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }
