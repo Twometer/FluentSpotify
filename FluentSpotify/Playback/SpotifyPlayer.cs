@@ -72,6 +72,11 @@ namespace FluentSpotify.Playback
             return SendPlayRequest(new PlayListRequest(playlist.Uri));
         }
 
+        public async Task Seek(int positionMs)
+        {
+            await container.RunScript($"window.player.seek({positionMs});");
+        }
+
         /* public Task PlayCollection()
         {
             return SendPlayRequest(new PlayListRequest($"spotify:user:{Spotify.Account.CurrentAccount.Id}:collection"));

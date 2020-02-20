@@ -42,6 +42,9 @@ namespace FluentSpotify
         private SpotifyPlayer player;
 
         private string lastNav;
+        private string lastTrack;
+
+        private bool ignoreNextSeek;
 
         public MainPage()
         {
@@ -108,6 +111,8 @@ namespace FluentSpotify
             Spotify.Playback.TrackPositionChanged += Playback_TrackPositionChanged;
 
             Debug.WriteLine("Initialized");
+
+            TimeSlider.ThumbToolTipValueConverter = new PercentageToTimeConverter();
         }
 
         private void Playback_TrackPositionChanged(object sender, EventArgs e)
@@ -119,15 +124,17 @@ namespace FluentSpotify
 
             var pos = Spotify.Playback.Position;
             var percentage = Spotify.Playback.Position / Spotify.Playback.CurrentTrack.Duration.TotalMilliseconds * 100;
+
             TimeSlider.Value = percentage;
             ElapsedTimeLabel.Text = TimeSpan.FromMilliseconds(pos).ToString(@"m\:ss");
+            ignoreNextSeek = true;
         }
 
         private void Playback_PlaybackStateChanged(object sender, EventArgs e)
         {
             var pb = Spotify.Playback;
 
-            if (pb.IsPlaying)
+            if (pb.IsPlaying && pb.CurrentTrack?.Id != lastTrack)
             {
                 SongLabel.Text = pb.CurrentTrack.Name;
                 ArtistLabel.Text = pb.CurrentTrack.ArtistsString;
@@ -135,7 +142,10 @@ namespace FluentSpotify
 
                 var image = pb.CurrentTrack.Images.FindByResolution(300);
                 ThumbnailImage.Source = new BitmapImage() { UriSource = new Uri(image.Url, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(ThumbnailImage.Width), DecodePixelHeight = (int)Math.Floor(ThumbnailImage.Height) };
+                lastTrack = pb.CurrentTrack.Id;
             }
+
+            TimeSlider.IsEnabled = pb.CurrentTrack != null;
         }
 
         private void SwitchThemeButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -162,24 +172,24 @@ namespace FluentSpotify
             }
         }
 
-        private void PlaybackContainer_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
+        private async void PlaybackContainer_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
-            player.Initialize();
+            await player.Initialize();
         }
 
-        private void PrevButton_Click(object sender, RoutedEventArgs e)
+        private async void PrevButton_Click(object sender, RoutedEventArgs e)
         {
-            player.Previous();
+            await player.Previous();
         }
 
-        private void PlayPauseButton_Click(object sender, RoutedEventArgs e)
+        private async void PlayPauseButton_Click(object sender, RoutedEventArgs e)
         {
-            player.TogglePlayback();
+            await player.TogglePlayback();
         }
 
-        private void NextButton_Click(object sender, RoutedEventArgs e)
+        private async void NextButton_Click(object sender, RoutedEventArgs e)
         {
-            player.Next();
+            await player.Next();
         }
 
         private void VolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -233,6 +243,17 @@ namespace FluentSpotify
         private void SearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
 
+        }
+
+        private async void TimeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (ignoreNextSeek)
+            {
+                ignoreNextSeek = false;
+                return;
+            }
+            var ms = player.CurrentTrack.Duration.TotalMilliseconds * (e.NewValue / 100.0);
+            await player.Seek((int)ms);
         }
     }
 }

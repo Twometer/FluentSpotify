@@ -140,6 +140,7 @@
     <Compile Include="UI\LoginDialog.xaml.cs">
       <DependentUpon>LoginDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\PercentageToTimeConverter.cs" />
     <Compile Include="UI\PlaylistPage.xaml.cs">
       <DependentUpon>PlaylistPage.xaml</DependentUpon>
     </Compile>
