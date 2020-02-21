@@ -14,6 +14,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -111,8 +112,8 @@ namespace FluentSpotify
                 await new LoginDialog().ShowAsync();
 
             var account = await Spotify.Account.GetAccount();
-            UserItem.Content = account.DisplayName;
-            UserItem.Icon = new BitmapIcon() { UriSource = new Uri(account.ImageUrl, UriKind.Absolute), ShowAsMonochrome = false };
+            UserNameLabel.Text = account.DisplayName;
+            UserImage.ProfilePicture = new BitmapImage() { UriSource = new Uri(account.ImageUrl, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(UserImage.Width), DecodePixelHeight = (int)Math.Floor(UserImage.Height) }; ;;
 
             loadedPlaylists.Clear();
             var playlists = await Spotify.Account.GetPlaylists();
@@ -329,6 +330,16 @@ namespace FluentSpotify
         {
             if (ContentFrame.Content is IScrollNotify notify)
                 notify.OnScroll(e.NextView.VerticalOffset, ScrollViewer.ExtentHeight - ScrollViewer.ViewportHeight);
+        }
+
+        private void UserPanel_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            UserPanel.Background = Resources["SystemChromeLowColor"] as Brush;
+        }
+
+        private void UserPanel_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            UserPanel.Background = new SolidColorBrush(Colors.Transparent);
         }
     }
 }

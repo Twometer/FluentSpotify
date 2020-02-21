@@ -55,7 +55,8 @@ namespace FluentSpotify.UI
             MetaLabel.Text = $"{playlist.TrackCount} songs";
 
             var image = playlist.Images.FindByResolution(300);
-            PlaylistImage.Source = new BitmapImage() { UriSource = new Uri(image.Url, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(PlaylistImage.Width), DecodePixelHeight = (int)Math.Floor(PlaylistImage.Height) };
+            if (image != null)
+                PlaylistImage.Source = new BitmapImage() { UriSource = new Uri(image.Url, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(PlaylistImage.Width), DecodePixelHeight = (int)Math.Floor(PlaylistImage.Height) };
 
             request = Spotify.Tracks.GetTracks(playlist.Id);
             loader = new PagedLoader<Track>(request, TrackList);

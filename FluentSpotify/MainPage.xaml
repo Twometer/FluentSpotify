@@ -80,13 +80,21 @@
                 <StackPanel Orientation="Vertical">
                     <muxc:NavigationViewItemSeparator/>
                     <muxc:NavigationViewItem x:Name="SwitchThemeButton" Tag="theme" Content="Switch Theme" Icon="View" Tapped="SwitchThemeButton_Tapped"/>
-                    <muxc:NavigationViewItem x:Name="UserItem" Tag="user" Content="User Name" Icon="Contact" Tapped="UserItem_Tapped"/>
                 </StackPanel>
             </muxc:NavigationView.PaneFooter>
-
-            <ScrollViewer x:Name="ScrollViewer" ViewChanging="ScrollViewer_ViewChanging">
-                <Frame x:Name="ContentFrame"/>
-            </ScrollViewer>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="42"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel x:Name="UserPanel" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,0,200,0" HorizontalAlignment="Right">
+                    <TextBlock x:Name="UserNameLabel" Text="Username" VerticalAlignment="Center" Margin="10,0"/>
+                    <muxc:PersonPicture x:Name="UserImage" Height="26" VerticalAlignment="Center" />
+                </StackPanel>
+                <ScrollViewer Grid.Row="1" x:Name="ScrollViewer" ViewChanging="ScrollViewer_ViewChanging">
+                    <Frame x:Name="ContentFrame"/>
+                </ScrollViewer>
+            </Grid>
         </muxc:NavigationView>
         <Grid Background="{ThemeResource SystemControlChromeHighAcrylicWindowMediumBrush}" Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -119,7 +127,7 @@
                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59569;"/>
                         </AppBarToggleButton.Icon>
                     </AppBarToggleButton>
-                    
+
                     <AppBarButton x:Name="PrevButton" Style="{ThemeResource AppBarButtonRevealStyle}" Width="42" Click="PrevButton_Click">
                         <AppBarButton.Icon>
                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59538;"/>
