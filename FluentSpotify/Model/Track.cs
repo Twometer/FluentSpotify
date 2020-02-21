@@ -52,7 +52,7 @@ namespace FluentSpotify.Model
                 Name = trackObj.Value<string>("name"),
                 Duration = TimeSpan.FromMilliseconds(trackObj.Value<int>("duration_ms")),
                 AddedAt = DateTime.Parse(obj.Value<string>("added_at"), CultureInfo.InvariantCulture),
-                AddedBy = obj["added_by"].Value<string>("id"),
+                AddedBy = obj["added_by"]?.Value<string>("id"),
                 Local = trackObj.Value<bool>("is_local"),
                 Explicit = trackObj.Value<bool>("explicit"),
                 Popularity = trackObj.Value<int>("popularity"),

@@ -10,6 +10,12 @@ namespace FluentSpotify.API
 {
     public class TracksApi
     {
+        public PagedRequest<Track> GetLibrary()
+        {
+            return Request.New("https://api.spotify.com/v1/me/tracks")
+                .Authenticate("Bearer", Spotify.AccessToken)
+                .GetPaged(obj => Track.Parse(obj));
+        }
 
         public PagedRequest<Track> GetTracks(string playlistId)
         {

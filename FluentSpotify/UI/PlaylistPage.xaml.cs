@@ -23,15 +23,22 @@ using Windows.UI.Xaml.Navigation;
 namespace FluentSpotify.UI
 {
 
-    public sealed partial class PlaylistPage : Page
+    public sealed partial class PlaylistPage : Page, IScrollNotify
     {
         private Playlist playlist;
 
         private PagedRequest<Track> request;
 
+        private PagedLoader<Track> loader;
+
         public PlaylistPage()
         {
             this.InitializeComponent();
+        }
+
+        public void OnScroll(double current, double max)
+        {
+            loader.OnScroll(current, max);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -51,20 +58,11 @@ namespace FluentSpotify.UI
             PlaylistImage.Source = new BitmapImage() { UriSource = new Uri(image.Url, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(PlaylistImage.Width), DecodePixelHeight = (int)Math.Floor(PlaylistImage.Height) };
 
             request = Spotify.Tracks.GetTracks(playlist.Id);
-            LoadMore();
+            loader = new PagedLoader<Track>(request, TrackList);
+            await loader.Begin();
 
             var isFollowing = await Spotify.Playlist.IsFollowing(playlist);
             FollowButton.Content = isFollowing ? "Unfollow" : "Follow";
-        }
-
-        private async void LoadMore()
-        {
-            if (request.HasNext)
-            {
-                var tracks = await request.Next();
-                foreach (var track in tracks)
-                    TrackList.Items.Add(track);
-            }
         }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)

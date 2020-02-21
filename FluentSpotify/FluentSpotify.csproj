@@ -141,6 +141,9 @@
     <Compile Include="UI\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\LibraryPage.xaml.cs">
+      <DependentUpon>LibraryPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\LoginDialog.xaml.cs">
       <DependentUpon>LoginDialog.xaml</DependentUpon>
     </Compile>
@@ -154,6 +157,8 @@
     <Compile Include="UI\WindowsTheme.cs" />
     <Compile Include="Util\Base64.cs" />
     <Compile Include="Util\Extensions.cs" />
+    <Compile Include="Util\IScrollNotify.cs" />
+    <Compile Include="Util\PagedLoader.cs" />
     <Compile Include="Util\ThrottledExecution.cs" />
     <Compile Include="Web\PagedRequest.cs" />
     <Compile Include="Web\Query.cs" />
@@ -186,6 +191,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\LibraryPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

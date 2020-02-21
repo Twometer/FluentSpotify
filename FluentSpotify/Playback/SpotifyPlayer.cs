@@ -127,6 +127,7 @@ namespace FluentSpotify.Playback
         public async Task SetShuffle(bool shuffle)
         {
             await Request.New("https://api.spotify.com/v1/me/player/shuffle")
+                .Authenticate("Bearer", Spotify.AccessToken)
                 .AddParameter("state", shuffle ? "true" : "false")
                 .Put();
         }
@@ -134,6 +135,7 @@ namespace FluentSpotify.Playback
         public async Task SetRepeat(RepeatMode mode)
         {
             await Request.New("https://api.spotify.com/v1/me/player/repeat")
+                .Authenticate("Bearer", Spotify.AccessToken)
                 .AddParameter("state", mode.ToString().ToLower())
                 .Put();
         }

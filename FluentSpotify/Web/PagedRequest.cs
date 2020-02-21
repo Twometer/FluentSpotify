@@ -15,6 +15,8 @@ namespace FluentSpotify.Web
 
         private Func<JObject, T> mapper;
 
+        public int Total { get; private set; }
+
         public PagedRequest(string endpoint, string auth, Func<JObject, T> mapper)
         {
             this.next = endpoint;
@@ -34,6 +36,7 @@ namespace FluentSpotify.Web
                 ret.Add(mapper(item as JObject));
 
             next = obj.Value<string>("next");
+            Total = obj.Value<int>("total");
             return ret;
         }
 

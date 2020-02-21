@@ -44,6 +44,7 @@ namespace FluentSpotify
         private string lastNav;
         private string lastTrack;
 
+        private bool isMute;
         private bool ignoreNextSeek;
 
         public MainPage()
@@ -93,6 +94,10 @@ namespace FluentSpotify
             else if (tag == "home")
             {
                 ContentFrame.Navigate(typeof(HomePage));
+            }
+            else if (tag == "liked")
+            {
+                ContentFrame.Navigate(typeof(LibraryPage));
             }
 
             lastNav = tag;
@@ -191,7 +196,10 @@ namespace FluentSpotify
 
         private async void PrevButton_Click(object sender, RoutedEventArgs e)
         {
-            await player.Previous();
+            if (player.Position > 3000)
+                await player.Seek(0);
+            else
+                await player.Previous();
         }
 
         private async void PlayPauseButton_Click(object sender, RoutedEventArgs e)
@@ -207,6 +215,8 @@ namespace FluentSpotify
         private void VolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             player?.SetVolume(e.NewValue / 100.0);
+            MuteFontIcon.Glyph = ((char)59239).ToString();
+            isMute = false;
         }
 
         private void PlaybackContainer_ScriptNotify(object sender, NotifyEventArgs e)
@@ -266,6 +276,59 @@ namespace FluentSpotify
             }
             var ms = player.CurrentTrack.Duration.TotalMilliseconds * (e.NewValue / 100.0);
             await player.Seek((int)ms);
+        }
+
+        private async void MuteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (isMute)
+            {
+                player?.SetVolume(VolumeSlider.Value / 100.0);
+                MuteFontIcon.Glyph = ((char)59239).ToString();
+            }
+            else
+            {
+                MuteFontIcon.Glyph = ((char)59215).ToString();
+                await player.SetVolume(0);
+            }
+            isMute = !isMute;
+        }
+
+        private async void RepeatButton_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            var b = RepeatButton.IsChecked;
+            if (b.HasValue)
+            {
+
+                if (b.Value)
+                    await player.SetRepeat(RepeatMode.Context);
+                else
+                    await player.SetRepeat(RepeatMode.Off);
+
+                RepeatFontIcon.Glyph = ((char)59630).ToString();
+            }
+            else
+            {
+                await player.SetRepeat(RepeatMode.Track);
+                RepeatFontIcon.Glyph = ((char)59629).ToString();
+            }
+        }
+
+        private async void ShuffleButton_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            if (ShuffleButton.IsChecked.Value)
+            {
+                await player.SetShuffle(true);
+            }
+            else
+            {
+                await player.SetShuffle(false);
+            }
+        }
+
+        private void ScrollViewer_ViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
+        {
+            if (ContentFrame.Content is IScrollNotify notify)
+                notify.OnScroll(e.NextView.VerticalOffset, ScrollViewer.ExtentHeight - ScrollViewer.ViewportHeight);
         }
     }
 }
