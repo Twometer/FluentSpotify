@@ -36,6 +36,10 @@ namespace FluentSpotify
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public static MainPage Current;
+
+        public ElementTheme WindowsDefaultTheme;
+
         private readonly ThrottledExecution throttledExecution = new ThrottledExecution(TimeSpan.FromMilliseconds(1000));
 
         private readonly IDictionary<string, Playlist> loadedPlaylists = new Dictionary<string, Playlist>();
@@ -48,9 +52,24 @@ namespace FluentSpotify
         private bool isMute;
         private bool ignoreNextSeek;
 
+
+
         public MainPage()
         {
             this.InitializeComponent();
+
+            Current = this;
+            WindowsDefaultTheme = RequestedTheme;
+
+            switch (AppSettings.AppTheme)
+            {
+                case AppSettings.Theme.Light:
+                    RequestedTheme = ElementTheme.Light;
+                    break;
+                case AppSettings.Theme.Dark:
+                    RequestedTheme = ElementTheme.Dark;
+                    break;
+            }
 
             var titleBar = ApplicationView.GetForCurrentView().TitleBar;
             titleBar.ButtonBackgroundColor = Windows.UI.Colors.Transparent;
@@ -169,25 +188,20 @@ namespace FluentSpotify
         private void SwitchThemeButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (RequestedTheme == ElementTheme.Light)
+            {
                 RequestedTheme = ElementTheme.Dark;
+                AppSettings.AppTheme = AppSettings.Theme.Dark;
+            }
             else
+            {
                 RequestedTheme = ElementTheme.Light;
+                AppSettings.AppTheme = AppSettings.Theme.Light;
+            }
         }
 
-        private async void UserItem_Tapped(object sender, TappedRoutedEventArgs e)
+        private void UserItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var dialog = new ContentDialog()
-            {
-                Title = "Log out?",
-                Content = "Do you want to log out of Fluent Spotify?",
-                PrimaryButtonText = "Yes",
-                SecondaryButtonText = "No"
-            };
-            var result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
-            {
-                Spotify.Auth.Logout();
-            }
+            
         }
 
         private async void PlaybackContainer_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)

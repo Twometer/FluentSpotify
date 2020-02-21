@@ -87,7 +87,7 @@
                     <RowDefinition Height="42"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StackPanel x:Name="UserPanel" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,0,200,0" HorizontalAlignment="Right">
+                <StackPanel x:Name="UserPanel" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,0,200,0" HorizontalAlignment="Right" >
                     <TextBlock x:Name="UserNameLabel" Text="Username" VerticalAlignment="Center" Margin="10,0"/>
                     <muxc:PersonPicture x:Name="UserImage" Height="26" VerticalAlignment="Center" />
                 </StackPanel>
