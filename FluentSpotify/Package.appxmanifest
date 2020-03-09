@@ -4,6 +4,7 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
   IgnorableNamespaces="uap mp">
 
   <Identity
@@ -40,9 +41,16 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png"  BackgroundColor="#000000"/>
       </uap:VisualElements>
-	  <uap:ApplicationContentUriRules>
-		<uap:Rule Type="include" Match ="ms-appx-web:///" WindowsRuntimeAccess="all"/>
-	  </uap:ApplicationContentUriRules>
+      <uap:ApplicationContentUriRules>
+        <uap:Rule Type="include" Match ="ms-appx-web:///" WindowsRuntimeAccess="all"/>
+      </uap:ApplicationContentUriRules>
+      <Extensions>
+        <uap5:Extension Category="windows.appExecutionAlias" Executable="FluentSpotify.exe" EntryPoint="FluentSpotify.App">
+          <uap5:AppExecutionAlias>
+            <uap5:ExecutionAlias Alias="FluentSpotify.exe"/>
+          </uap5:AppExecutionAlias>
+        </uap5:Extension>
+      </Extensions>
     </Application>
   </Applications>
 

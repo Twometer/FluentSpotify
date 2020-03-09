@@ -96,5 +96,33 @@ namespace FluentSpotify
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
+
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+            base.OnActivated(args);
+            switch (args.Kind)
+            {
+                case ActivationKind.CommandLineLaunch:
+                    CommandLineActivatedEventArgs cmdLineArgs = args as CommandLineActivatedEventArgs;
+                    CommandLineActivationOperation operation = cmdLineArgs.Operation;
+                    string cmdLineString = operation.Arguments;
+                    string activationPath = operation.CurrentDirectoryPath;
+
+                    var rootFrame = Window.Current.Content as Frame;
+                    if (rootFrame == null)
+                    {
+                        rootFrame = new Frame();
+                        rootFrame.NavigationFailed += OnNavigationFailed;
+                        Window.Current.Content = rootFrame;
+                    }
+                    if (rootFrame.Content == null)
+                    {
+                        rootFrame.Navigate(typeof(MainPage), cmdLineString);
+                    }
+                    Window.Current.Activate();
+
+                    break;
+            }
+        }
     }
 }

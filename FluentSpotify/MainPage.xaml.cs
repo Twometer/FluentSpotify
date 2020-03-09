@@ -52,8 +52,6 @@ namespace FluentSpotify
         private bool isMute;
         private bool ignoreNextSeek;
 
-
-
         public MainPage()
         {
             this.InitializeComponent();
@@ -79,6 +77,24 @@ namespace FluentSpotify
             coreTitleBar.ExtendViewIntoTitleBar = true;
 
             ContentFrame.Navigate(typeof(HomePage));
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            var commandLineArgs = e.Parameter as string;
+            if (!string.IsNullOrEmpty(commandLineArgs))
+            {
+                // TODO parse command line arguments
+
+                /* var dialog = new ContentDialog()
+                {
+                    Title = "Command line args",
+                    Content = commandLineArgs,
+                    PrimaryButtonText = "Ok"
+                };
+                dialog.ShowAsync(); */
+            }
         }
 
         private void AddPlaylist(Playlist playlist)
@@ -132,7 +148,7 @@ namespace FluentSpotify
 
             var account = await Spotify.Account.GetAccount();
             UserNameLabel.Text = account.DisplayName;
-            UserImage.ProfilePicture = new BitmapImage() { UriSource = new Uri(account.ImageUrl, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(UserImage.Width), DecodePixelHeight = (int)Math.Floor(UserImage.Height) }; ;;
+            UserImage.ProfilePicture = new BitmapImage() { UriSource = new Uri(account.ImageUrl, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(UserImage.Width), DecodePixelHeight = (int)Math.Floor(UserImage.Height) }; ; ;
 
             loadedPlaylists.Clear();
             var playlists = await Spotify.Account.GetPlaylists();
@@ -201,7 +217,7 @@ namespace FluentSpotify
 
         private void UserItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            
+
         }
 
         private async void PlaybackContainer_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
