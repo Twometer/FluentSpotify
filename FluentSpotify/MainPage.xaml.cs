@@ -1,4 +1,5 @@
 ﻿using FluentSpotify.API;
+using FluentSpotify.CLI;
 using FluentSpotify.Model;
 using FluentSpotify.Playback;
 using FluentSpotify.UI;
@@ -82,18 +83,15 @@ namespace FluentSpotify
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            var commandLineArgs = e.Parameter as string;
-            if (!string.IsNullOrEmpty(commandLineArgs))
+            if (e.Parameter is CmdOptions options)
             {
-                // TODO parse command line arguments
-
-                /* var dialog = new ContentDialog()
+                /*var dialog = new ContentDialog()
                 {
                     Title = "Command line args",
-                    Content = commandLineArgs,
+                    Content = "player=" + options.PlayerId + "\npmode=" + options.PlayerMode + "\nserver=" + options.UseServer,
                     PrimaryButtonText = "Ok"
                 };
-                dialog.ShowAsync(); */
+                dialog.ShowAsync();*/
             }
         }
 
@@ -213,11 +211,6 @@ namespace FluentSpotify
                 RequestedTheme = ElementTheme.Light;
                 AppSettings.AppTheme = AppSettings.Theme.Light;
             }
-        }
-
-        private void UserItem_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-
         }
 
         private async void PlaybackContainer_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)

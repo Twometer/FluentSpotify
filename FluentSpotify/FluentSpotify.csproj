@@ -121,6 +121,7 @@
     <Compile Include="API\PlaylistApi.cs" />
     <Compile Include="API\SearchApi.cs" />
     <Compile Include="API\TracksApi.cs" />
+    <Compile Include="CLI\CmdOptions.cs" />
     <Compile Include="Model\Account.cs" />
     <Compile Include="API\KeyStore.cs" />
     <Compile Include="API\Spotify.cs" />
@@ -213,6 +214,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CommandLineParser">
+      <Version>2.7.82</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.9</Version>
     </PackageReference>
@@ -228,6 +232,7 @@
       <Link>.editorconfig</Link>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
