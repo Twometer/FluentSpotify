@@ -18,7 +18,7 @@ namespace FluentSpotify.API
 
         public static TracksApi Tracks { get; } = new TracksApi();
 
-        public static SpotifyPlayer Playback { get; set; }
+        public static LocalPlayer Playback { get; set; }
 
         public static SearchApi Search { get; } = new SearchApi();
 

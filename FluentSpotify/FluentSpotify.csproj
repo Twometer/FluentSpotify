@@ -136,8 +136,10 @@
     <Compile Include="Model\Playlist.cs" />
     <Compile Include="Model\SearchResult.cs" />
     <Compile Include="Model\Track.cs" />
+    <Compile Include="Playback\ISpotifyPlayer.cs" />
+    <Compile Include="Playback\RemotePlayer.cs" />
     <Compile Include="Playback\RepeatMode.cs" />
-    <Compile Include="Playback\SpotifyPlayer.cs" />
+    <Compile Include="Playback\LocalPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>

@@ -45,7 +45,7 @@ namespace FluentSpotify
 
         private readonly IDictionary<string, Playlist> loadedPlaylists = new Dictionary<string, Playlist>();
 
-        private SpotifyPlayer player;
+        private LocalPlayer player;
 
         private string lastNav;
         private string lastTrack;
@@ -154,7 +154,7 @@ namespace FluentSpotify
                 AddPlaylist(list);
 
             PlaybackContainer.Navigate(new Uri("ms-appx-web:///Assets/DrmContainer.html", UriKind.Absolute));
-            player = new SpotifyPlayer(PlaybackContainer);
+            player = new LocalPlayer(PlaybackContainer);
 
             Spotify.Playback = player;
 
