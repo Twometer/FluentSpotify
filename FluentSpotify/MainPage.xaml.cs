@@ -164,6 +164,9 @@ namespace FluentSpotify
             Debug.WriteLine("Initialized");
 
             TimeSlider.ThumbToolTipValueConverter = new PercentageToTimeConverter();
+
+            var devices = await Spotify.Account.GetDevices();
+            // TODO show in GUI
         }
 
         private void Playback_TrackPositionChanged(object sender, EventArgs e)

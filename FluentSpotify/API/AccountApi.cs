@@ -1,7 +1,9 @@
 ﻿using FluentSpotify.Model;
 using FluentSpotify.Web;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +36,23 @@ namespace FluentSpotify.API
                 .All();
 
             return data;
+        }
+
+        public async Task<IEnumerable<Device>> GetDevices()
+        {
+            await Spotify.Auth.RefreshToken();
+
+            var data = await Request.New("https://api.spotify.com/v1/me/player/devices")
+                .Authenticate("Bearer", Spotify.AccessToken)
+                .Get();
+
+            var devices = new List<Device>();
+            var jArray = JObject.Parse(data)["devices"] as JArray;
+            
+            foreach (var item in jArray)
+                devices.Add(Device.Parse((JObject) item));
+
+            return devices;
         }
 
     }
