@@ -22,6 +22,8 @@ namespace FluentSpotify.Playback
 
         public int Position { get; private set; }
 
+        public string PlayerId => playerId;
+
         public event EventHandler PlaybackStateChanged;
 
         public event EventHandler TrackPositionChanged;
@@ -170,7 +172,7 @@ namespace FluentSpotify.Playback
         {
             Position = data.Value<int>("position");
             isSoftwarePause = data.Value<bool>("paused");
-            TrackPositionChanged.Invoke(this, new EventArgs());
+            TrackPositionChanged?.Invoke(this, new EventArgs());
         }
 
         private void HandleStateChange(JObject data)
@@ -184,7 +186,7 @@ namespace FluentSpotify.Playback
                 CurrentTrack = Track.ParseMinimal(data);
             }
 
-            PlaybackStateChanged.Invoke(this, new EventArgs());
+            PlaybackStateChanged?.Invoke(this, new EventArgs());
         }
 
         

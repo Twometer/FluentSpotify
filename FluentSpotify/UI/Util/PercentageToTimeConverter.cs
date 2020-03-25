@@ -15,7 +15,7 @@ namespace FluentSpotify.UI
             if (targetType == typeof(string))
             {
                 var fac = (double)value / 100.0d;
-                var duration = Spotify.Playback.CurrentTrack.Duration.TotalMilliseconds;
+                var duration = Spotify.Playback.CurrentPlayer.CurrentTrack.Duration.TotalMilliseconds;
                 return TimeSpan.FromMilliseconds(duration * fac).ToString(@"m\:ss");
             }
 

@@ -163,10 +163,16 @@
 
                 <Slider x:Name="VolumeSlider" VerticalAlignment="Center" Width="120" Value="60" ValueChanged="VolumeSlider_ValueChanged"/>
 
-                <AppBarButton x:Name="MoreButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42" Height="42" Margin="20,0,0,0" Click="MoreButton_Click">
+                <AppBarButton x:Name="DeviceButton" Style="{ThemeResource AppBarButtonRevealStyle}" Grid.Column="2" Width="42" Height="42" Margin="20,0,0,0">
                     <AppBarButton.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59154;"/>
                     </AppBarButton.Icon>
+                    <AppBarButton.Flyout>
+                        <MenuFlyout x:Name="DeviceFlyout">
+                            <MenuFlyoutItem Text="This computer"/>
+                            <MenuFlyoutSeparator/>
+                        </MenuFlyout>
+                    </AppBarButton.Flyout>
                 </AppBarButton>
             </StackPanel>
         </Grid>

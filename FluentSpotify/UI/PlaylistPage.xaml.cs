@@ -68,13 +68,13 @@ namespace FluentSpotify.UI
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            Spotify.Playback.PlayPlaylist(playlist);
+            Spotify.Playback.CurrentPlayer.PlayPlaylist(playlist);
         }
 
         private void TrackList_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is Track)
-                Spotify.Playback.PlayTrack(playlist, TrackList.Items.IndexOf(e.ClickedItem));
+                Spotify.Playback.CurrentPlayer.PlayTrack(playlist, TrackList.Items.IndexOf(e.ClickedItem));
         }
     }
 }

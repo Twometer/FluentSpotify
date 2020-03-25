@@ -3,6 +3,7 @@ using FluentSpotify.CLI;
 using FluentSpotify.Model;
 using FluentSpotify.Playback;
 using FluentSpotify.UI;
+using FluentSpotify.UI.Controller;
 using FluentSpotify.Util;
 using FluentSpotify.Web;
 using Newtonsoft.Json.Linq;
@@ -12,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -45,7 +47,7 @@ namespace FluentSpotify
 
         private readonly IDictionary<string, Playlist> loadedPlaylists = new Dictionary<string, Playlist>();
 
-        private LocalPlayer player;
+        private DeviceListController deviceListController;
 
         private string lastNav;
         private string lastTrack;
@@ -71,27 +73,25 @@ namespace FluentSpotify
             }
 
             var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.ButtonBackgroundColor = Windows.UI.Colors.Transparent;
-            titleBar.ButtonInactiveBackgroundColor = Windows.UI.Colors.Transparent;
+            titleBar.ButtonBackgroundColor = Colors.Transparent;
+            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
 
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
 
+            deviceListController = new DeviceListController(this, DeviceFlyout);
+
             ContentFrame.Navigate(typeof(HomePage));
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            Spotify.Playback.LocalPlayer = new LocalPlayer(PlaybackContainer);
             if (e.Parameter is CmdOptions options)
             {
-                /*var dialog = new ContentDialog()
-                {
-                    Title = "Command line args",
-                    Content = "player=" + options.PlayerId + "\npmode=" + options.PlayerMode + "\nserver=" + options.UseServer,
-                    PrimaryButtonText = "Ok"
-                };
-                dialog.ShowAsync();*/
+                await Spotify.Playback.TransferPlayback(options.PlayerId);
+                Debug.WriteLine("Starting with player attached to " + options.PlayerId);
             }
         }
 
@@ -154,30 +154,32 @@ namespace FluentSpotify
                 AddPlaylist(list);
 
             PlaybackContainer.Navigate(new Uri("ms-appx-web:///Assets/DrmContainer.html", UriKind.Absolute));
-            player = new LocalPlayer(PlaybackContainer);
-
-            Spotify.Playback = player;
 
             Spotify.Playback.PlaybackStateChanged += Playback_PlaybackStateChanged;
             Spotify.Playback.TrackPositionChanged += Playback_TrackPositionChanged;
 
-            Debug.WriteLine("Initialized");
-
             TimeSlider.ThumbToolTipValueConverter = new PercentageToTimeConverter();
 
-            var devices = await Spotify.Account.GetDevices();
-            // TODO show in GUI
+            await deviceListController.ReloadDeviceList();
+            if (deviceListController.IsOtherDeviceActive())
+                Spotify.Playback.CurrentPlayer = new RemotePlayer(deviceListController.GetCurrentlyActivePlayer());
+            else
+                Spotify.Playback.CurrentPlayer = Spotify.Playback.LocalPlayer;
+
+            Debug.WriteLine("Initialized");
         }
 
         private void Playback_TrackPositionChanged(object sender, EventArgs e)
         {
-            PlaybackFontIcon.Glyph = Spotify.Playback.IsPlaying ? ((char)59241).ToString() : ((char)59240).ToString();
+            var player = Spotify.Playback.CurrentPlayer;
 
-            if (Spotify.Playback.CurrentTrack == null)
+            PlaybackFontIcon.Glyph = player.IsPlaying ? ((char)59241).ToString() : ((char)59240).ToString();
+
+            if (player.CurrentTrack == null)
                 return;
 
-            var pos = Spotify.Playback.Position;
-            var percentage = Spotify.Playback.Position / Spotify.Playback.CurrentTrack.Duration.TotalMilliseconds * 100;
+            var pos = player.Position;
+            var percentage = player.Position / player.CurrentTrack.Duration.TotalMilliseconds * 100;
 
             TimeSlider.Value = percentage;
             ElapsedTimeLabel.Text = TimeSpan.FromMilliseconds(pos).ToString(@"m\:ss");
@@ -186,20 +188,20 @@ namespace FluentSpotify
 
         private void Playback_PlaybackStateChanged(object sender, EventArgs e)
         {
-            var pb = Spotify.Playback;
+            var player = Spotify.Playback.CurrentPlayer;
 
-            if (pb.IsPlaying && pb.CurrentTrack?.Id != lastTrack)
+            if (player.IsPlaying && player.CurrentTrack?.Id != lastTrack)
             {
-                SongLabel.Text = pb.CurrentTrack.Name;
-                ArtistLabel.Text = pb.CurrentTrack.ArtistsString;
-                TotalTimeLabel.Text = pb.CurrentTrack.DurationString;
+                SongLabel.Text = player.CurrentTrack.Name;
+                ArtistLabel.Text = player.CurrentTrack.ArtistsString;
+                TotalTimeLabel.Text = player.CurrentTrack.DurationString;
 
-                var image = pb.CurrentTrack.Images.FindByResolution(300);
+                var image = player.CurrentTrack.Images.FindByResolution(300);
                 ThumbnailImage.Source = new BitmapImage() { UriSource = new Uri(image.Url, UriKind.Absolute), DecodePixelWidth = (int)Math.Floor(ThumbnailImage.Width), DecodePixelHeight = (int)Math.Floor(ThumbnailImage.Height) };
-                lastTrack = pb.CurrentTrack.Id;
+                lastTrack = player.CurrentTrack.Id;
             }
 
-            TimeSlider.IsEnabled = pb.CurrentTrack != null;
+            TimeSlider.IsEnabled = player.CurrentTrack != null;
         }
 
         private void SwitchThemeButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -218,11 +220,12 @@ namespace FluentSpotify
 
         private async void PlaybackContainer_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
-            await player.Initialize();
+            await Spotify.Playback.LocalPlayer.Initialize();
         }
 
         private async void PrevButton_Click(object sender, RoutedEventArgs e)
         {
+            var player = Spotify.Playback.CurrentPlayer;
             if (player.Position > 3000)
                 await player.Seek(0);
             else
@@ -231,16 +234,19 @@ namespace FluentSpotify
 
         private async void PlayPauseButton_Click(object sender, RoutedEventArgs e)
         {
+            var player = Spotify.Playback.CurrentPlayer;
             await player.TogglePlayback();
         }
 
         private async void NextButton_Click(object sender, RoutedEventArgs e)
         {
+            var player = Spotify.Playback.CurrentPlayer;
             await player.Next();
         }
 
         private void VolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
+            var player = Spotify.Playback.CurrentPlayer;
             player?.SetVolume(e.NewValue / 100.0);
             MuteFontIcon.Glyph = ((char)59239).ToString();
             isMute = false;
@@ -249,16 +255,12 @@ namespace FluentSpotify
         private void PlaybackContainer_ScriptNotify(object sender, NotifyEventArgs e)
         {
             var val = JObject.Parse(e.Value);
-            player.HandleEvent(val);
-        }
-
-        private void MoreButton_Click(object sender, RoutedEventArgs e)
-        {
-
+            Spotify.Playback.LocalPlayer.HandleEvent(val);
         }
 
         private void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
+            var player = Spotify.Playback.CurrentPlayer;
             if (args.ChosenSuggestion != null)
             {
                 var track = args.ChosenSuggestion as Track;
@@ -296,6 +298,7 @@ namespace FluentSpotify
 
         private async void TimeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
+            var player = Spotify.Playback.CurrentPlayer;
             if (ignoreNextSeek)
             {
                 ignoreNextSeek = false;
@@ -307,6 +310,7 @@ namespace FluentSpotify
 
         private async void MuteButton_Click(object sender, RoutedEventArgs e)
         {
+            var player = Spotify.Playback.CurrentPlayer;
             if (isMute)
             {
                 player?.SetVolume(VolumeSlider.Value / 100.0);
@@ -323,6 +327,7 @@ namespace FluentSpotify
         private async void RepeatButton_CheckedChanged(object sender, RoutedEventArgs e)
         {
             var b = RepeatButton.IsChecked;
+            var player = Spotify.Playback.CurrentPlayer;
             if (b.HasValue)
             {
 
@@ -342,6 +347,7 @@ namespace FluentSpotify
 
         private async void ShuffleButton_CheckedChanged(object sender, RoutedEventArgs e)
         {
+            var player = Spotify.Playback.CurrentPlayer;
             if (ShuffleButton.IsChecked.Value)
             {
                 await player.SetShuffle(true);
@@ -367,5 +373,6 @@ namespace FluentSpotify
         {
             UserPanel.Background = new SolidColorBrush(Colors.Transparent);
         }
+   
     }
 }

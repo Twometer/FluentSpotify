@@ -44,7 +44,7 @@ namespace FluentSpotify.UI
         private void TrackList_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is Track track)
-                Spotify.Playback.PlayTrack(track);
+                Spotify.Playback.CurrentPlayer.PlayTrack(track);
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
