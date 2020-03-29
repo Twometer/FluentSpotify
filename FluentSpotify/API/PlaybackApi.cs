@@ -122,7 +122,7 @@ namespace FluentSpotify.API
         {
             while (true)
             {
-                CurrentPlayer?.Update();
+                CurrentPlayer?.Update().Wait();
                 Thread.Sleep(1000);
             }
         }
