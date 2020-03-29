@@ -62,6 +62,24 @@ namespace FluentSpotify.Model
             return result;
         }
 
+        public static Track ParseFree(JObject obj)
+        {
+            var trackObj = obj;
+            var result = new Track
+            {
+                Id = trackObj.Value<string>("id"),
+                Name = trackObj.Value<string>("name"),
+                Duration = TimeSpan.FromMilliseconds(trackObj.Value<int>("duration_ms")),
+                Local = trackObj.Value<bool>("is_local"),
+                Explicit = trackObj.Value<bool>("explicit"),
+                Popularity = trackObj.Value<int>("popularity"),
+                Artists = (trackObj["artists"] as JArray)?.Select(artist => artist.Value<string>("name")).ToArray(),
+                Images = (obj["album"]["images"] as JArray)?.Select(imgObj => ImageInfo.Parse((JObject)imgObj)),
+                AvailableMarkets = (trackObj["available_markets"] as JArray)?.ToObject<string[]>()
+            };
+            return result;
+        }
+
         public static Track ParseMinimal(JObject obj)
         {
             var result = new Track

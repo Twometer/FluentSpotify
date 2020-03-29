@@ -22,7 +22,7 @@ namespace FluentSpotify.Playback
 
         public int Position { get; private set; }
 
-        public string PlayerId => playerId;
+        public string PlayerId { get; private set; }
 
         public event EventHandler PlaybackStateChanged;
 
@@ -32,9 +32,11 @@ namespace FluentSpotify.Playback
 
         private WebView container;
 
-        private string playerId;
+        private bool initialized;
 
         private RemotePlayer webApi;
+
+
 
         public LocalPlayer(WebView container)
         {
@@ -43,10 +45,17 @@ namespace FluentSpotify.Playback
 
         public async Task Initialize()
         {
+            if (initialized) return;
+            initialized = true;
+            
             await container.RunScript($"SetToken('{Spotify.AccessToken}');");
             await container.RunScript("Connect();");
-            playerId = await container.RunScript("GetPlayerId();");
-            webApi = new RemotePlayer(playerId);
+            PlayerId = await container.RunScript("GetPlayerId();");
+            webApi = new RemotePlayer(PlayerId);
+            // Don't initialize that pseudoplayer's polling system, we just use it as an API wrapper
+            // because the code is the same.
+
+            Log.Info("Local player initialized");
         }
 
         public async Task Pause()
@@ -84,7 +93,7 @@ namespace FluentSpotify.Playback
             // TODO For the internal API we require an open.spotify.com AccessToken
             try
             {
-                var url = $"https://gew-spclient.spotify.com/connect-state/v1/player/command/from/{playerId}/to/{playerId}";
+                var url = $"https://gew-spclient.spotify.com/connect-state/v1/player/command/from/{PlayerId}/to/{PlayerId}";
                 var accountId = Spotify.Account.CurrentAccount.Id;
                 var payload = "{\"command\":{\"context\":{\"uri\":\"spotify:user:" + accountId + ":collection\",\"url\":\"context://spotify:user:" + accountId + ":collection\",\"metadata\":{}},\"play_origin\":{\"feature_identifier\":\"harmony\",\"feature_version\":\"3.23.0-a0f8ef4\"},\"options\":{\"skip_to\":{\"track_index\":0},\"license\":\"premium\",\"player_options_override\":{\"repeating_track\":false,\"repeating_context\":false}},\"endpoint\":\"play\"}}";
 
@@ -189,6 +198,11 @@ namespace FluentSpotify.Playback
             PlaybackStateChanged?.Invoke(this, new EventArgs());
         }
 
-        
+        public Task Update()
+        {
+            // Local player gets events from the JavaScript wrapper. Therefore, it does not need
+            // any polling actions
+            return Task.CompletedTask;
+        }
     }
 }

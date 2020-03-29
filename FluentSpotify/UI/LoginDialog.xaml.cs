@@ -91,9 +91,9 @@ namespace FluentSpotify.UI
             {
                 await WebView.InvokeScriptAsync("eval", new string[] { sb.ToString() });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Console.WriteLine("Failed to apply styling");
+                Log.Error("Failed to apply styling", ex);
             }
             finally
             {

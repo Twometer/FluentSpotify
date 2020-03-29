@@ -167,6 +167,7 @@
     <Compile Include="Util\Base64.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="Util\IScrollNotify.cs" />
+    <Compile Include="Util\Log.cs" />
     <Compile Include="Util\PagedLoader.cs" />
     <Compile Include="Util\ThrottledExecution.cs" />
     <Compile Include="Web\PagedRequest.cs" />

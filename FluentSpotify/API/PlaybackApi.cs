@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FluentSpotify.API
@@ -36,32 +37,50 @@ namespace FluentSpotify.API
 
         public event EventHandler PlayerChanged;
 
+        public PlaybackApi()
+        {
+            var updateThread = new Thread(UpdateWorker);
+            updateThread.IsBackground = true;
+            updateThread.Start();
+        }
+
+        /// <summary>
+        /// Asks the Spotify Web API to transfer playback to a different player
+        /// </summary>
+        /// <param name="playerId">The player/device id to transfer to</param>
         public async Task TransferPlayback(string playerId)
         {
+            Log.Info($"Transferring playback to {playerId}...");
             await Spotify.Auth.RefreshToken();
             await SendTransferRequest(new
             {
-                device_ids = new[] {playerId}
+                device_ids = new[] { playerId }
             });
 
             if (playerId == LocalPlayer.PlayerId)
                 CurrentPlayer = LocalPlayer;
             else
                 CurrentPlayer = new RemotePlayer(playerId);
+            await CurrentPlayer.Initialize();
         }
 
+        /// <summary>
+        /// Updates the current player to a new player. This mainly updates the event handlers
+        /// to the correct player.
+        /// 
+        /// Note: Must be called BEFORE updating
+        /// </summary>
+        /// <param name="player">The new player.</param>
         private void UpdatePlayer(ISpotifyPlayer player)
         {
-            if (CurrentPlayer is LocalPlayer oldLocalPlayer)
+            Log.Info($"Updating player to {player.GetType().Name}");
+            if (CurrentPlayer != null)
             {
-                oldLocalPlayer.PlaybackStateChanged -= Handle_PlaybackStateChanged;
-                oldLocalPlayer.TrackPositionChanged -= Handle_TrackPositionChanged;
+                CurrentPlayer.PlaybackStateChanged -= Handle_PlaybackStateChanged;
+                CurrentPlayer.TrackPositionChanged -= Handle_TrackPositionChanged;
             }
-            if (player is LocalPlayer newLocalPlayer)
-            {
-                newLocalPlayer.PlaybackStateChanged += Handle_PlaybackStateChanged;
-                newLocalPlayer.TrackPositionChanged += Handle_TrackPositionChanged;
-            }
+            player.PlaybackStateChanged += Handle_PlaybackStateChanged;
+            player.TrackPositionChanged += Handle_TrackPositionChanged;
             PlayerChanged?.Invoke(this, new EventArgs());
         }
 
@@ -96,6 +115,15 @@ namespace FluentSpotify.API
             catch (WebException e)
             {
                 e.PrintStackTrace("Transfer failed", body);
+            }
+        }
+
+        private void UpdateWorker()
+        {
+            while (true)
+            {
+                CurrentPlayer?.Update();
+                Thread.Sleep(1000);
             }
         }
     }

@@ -3,8 +3,10 @@ using FluentSpotify.Model;
 using FluentSpotify.Util;
 using FluentSpotify.Web;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -15,27 +17,50 @@ namespace FluentSpotify.Playback
 {
     public class RemotePlayer : ISpotifyPlayer
     {
-        public bool IsPlaying => throw new NotImplementedException();
+        public bool IsPlaying { get; private set; }
 
-        public Track CurrentTrack => throw new NotImplementedException();
+        public Track CurrentTrack { get; private set; }
 
-        public int Position => throw new NotImplementedException();
+        public int Position { get; private set; }
+
+        public event EventHandler PlaybackStateChanged;
+
+        public event EventHandler TrackPositionChanged;
 
         private readonly string playerId;
+
+        private int updateCounter;
 
         public RemotePlayer(string playerId)
         {
             this.playerId = playerId;
         }
 
-        public Task Initialize()
+        public async Task Initialize()
         {
-            // Remote players don't need initialization
-            return Task.CompletedTask;
+            await ReloadPlaybackState();
+        }
+
+        public async Task Update()
+        {
+            if (IsPlaying)
+            {
+                Position += 1000;
+                TrackPositionChanged?.Invoke(this, new EventArgs());
+            }
+
+            var pollIntervalElapsed = updateCounter % 15 == 0; // Poll every 15 seconds
+            if (Position >= CurrentTrack.Duration.TotalMilliseconds || pollIntervalElapsed)
+            {
+                await ReloadPlaybackState();
+            }
+
+            updateCounter++;
         }
 
         public async Task Next()
         {
+            await Spotify.Auth.RefreshToken();
             await Request.New("https://api.spotify.com/v1/me/player/next")
                 .Authenticate("Bearer", Spotify.AccessToken)
                 .AddParameter("device_id", playerId)
@@ -44,18 +69,24 @@ namespace FluentSpotify.Playback
 
         public async Task Pause()
         {
+            await Spotify.Auth.RefreshToken();
             await Request.New("https://api.spotify.com/v1/me/player/pause")
                 .Authenticate("Bearer", Spotify.AccessToken)
                 .AddParameter("device_id", playerId)
                 .Put();
+            IsPlaying = false;
+            TrackPositionChanged?.Invoke(this, new EventArgs());
         }
 
         public async Task Play()
         {
+            await Spotify.Auth.RefreshToken();
             await Request.New("https://api.spotify.com/v1/me/player/play")
                 .Authenticate("Bearer", Spotify.AccessToken)
                 .AddParameter("device_id", playerId)
                 .Put();
+            IsPlaying = true;
+            TrackPositionChanged?.Invoke(this, new EventArgs());
         }
 
         public Task PlayPlaylist(Playlist playlist)
@@ -75,6 +106,7 @@ namespace FluentSpotify.Playback
 
         public async Task Previous()
         {
+            await Spotify.Auth.RefreshToken();
             await Request.New("https://api.spotify.com/v1/me/player/previous")
                 .Authenticate("Bearer", Spotify.AccessToken)
                 .AddParameter("device_id", playerId)
@@ -83,6 +115,7 @@ namespace FluentSpotify.Playback
 
         public async Task Seek(int positionMs)
         {
+            await Spotify.Auth.RefreshToken();
             await Request.New("https://api.spotify.com/v1/me/player/next")
                 .Authenticate("Bearer", Spotify.AccessToken)
                 .AddParameter("position_ms", positionMs.ToString())
@@ -92,6 +125,7 @@ namespace FluentSpotify.Playback
 
         public async Task SetRepeat(RepeatMode mode)
         {
+            await Spotify.Auth.RefreshToken();
             await Request.New("https://api.spotify.com/v1/me/player/repeat")
                 .Authenticate("Bearer", Spotify.AccessToken)
                 .AddParameter("state", mode.ToString().ToLower())
@@ -101,6 +135,7 @@ namespace FluentSpotify.Playback
 
         public async Task SetShuffle(bool shuffle)
         {
+            await Spotify.Auth.RefreshToken();
             await Request.New("https://api.spotify.com/v1/me/player/shuffle")
                 .Authenticate("Bearer", Spotify.AccessToken)
                 .AddParameter("state", shuffle ? "true" : "false")
@@ -111,6 +146,7 @@ namespace FluentSpotify.Playback
         public async Task SetVolume(double vol)
         {
             var volPercent = vol * 100.0d;
+            await Spotify.Auth.RefreshToken();
             await Request.New("https://api.spotify.com/v1/me/player/pause")
                 .Authenticate("Bearer", Spotify.AccessToken)
                 .AddParameter("volume_percent", volPercent.ToString())
@@ -125,10 +161,27 @@ namespace FluentSpotify.Playback
             else return Play();
         }
 
+        private async Task ReloadPlaybackState()
+        {
+            await Spotify.Auth.RefreshToken();
+            var state = await Request.New("https://api.spotify.com/v1/me/player")
+                .Authenticate("Bearer", Spotify.AccessToken)
+                .Get();
+
+            var obj = JObject.Parse(state);
+            var item = obj["item"] as JObject;
+            CurrentTrack = Track.ParseFree(item);
+            IsPlaying = obj.Value<bool>("is_playing");
+            Position = obj.Value<int>("progress_ms");
+            PlaybackStateChanged?.Invoke(this, new EventArgs());
+            TrackPositionChanged?.Invoke(this, new EventArgs());
+        }
+
         /* Playback requests */
 
         private async Task SendPlayRequest(object obj)
         {
+            await Spotify.Auth.RefreshToken();
             var body = JsonConvert.SerializeObject(obj);
             try
             {
@@ -150,6 +203,8 @@ namespace FluentSpotify.Playback
                 e.PrintStackTrace("Playback failed", body);
             }
         }
+
+
 
         private class PlayListRequest
         {

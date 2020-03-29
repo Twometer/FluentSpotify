@@ -40,15 +40,15 @@ namespace FluentSpotify.Util
 
         public static async void PrintStackTrace(this WebException e, string body = null, string header = "Failed to communicate with the server")
         {
-            Debug.WriteLine("=== " + header + " ===");
+            Log.Error("=== " + header + " ===");
             if (!string.IsNullOrEmpty(body))
-                Debug.WriteLine(" Body: " + body);
-            Debug.WriteLine(" Exception: ");
-            Debug.WriteLine(e.ToString());
-            Debug.WriteLine(" Server Response: ");
+                Log.Error(" Body: " + body);
+            Log.Error(" Exception: ");
+            Log.Error(e.ToString());
+            Log.Error(" Server Response: ");
             using (var reader = new StreamReader(e.Response.GetResponseStream()))
             {
-                Debug.WriteLine(await reader.ReadToEndAsync());
+                Log.Error(await reader.ReadToEndAsync());
             }
         }
 
