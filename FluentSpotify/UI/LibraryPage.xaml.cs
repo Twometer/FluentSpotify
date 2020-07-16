@@ -57,7 +57,7 @@ namespace FluentSpotify.UI
 
         public void OnScroll(double current, double max)
         {
-            loader.OnScroll(current, max);
+            loader?.OnScroll(current, max);
         }
     }
 }

@@ -164,11 +164,17 @@ namespace FluentSpotify
 
             await deviceListController.ReloadDeviceList();
             if (deviceListController.IsOtherDeviceActive())
+            {
                 Spotify.Playback.CurrentPlayer = new RemotePlayer(deviceListController.GetCurrentlyActivePlayer());
+                await Spotify.Playback.CurrentPlayer.Initialize();
+            }
             else
+            {
                 Spotify.Playback.CurrentPlayer = Spotify.Playback.LocalPlayer;
+                // Player will be initialized later
+            }
 
-            await Spotify.Playback.CurrentPlayer.Initialize();
+
 
             Log.Info("Data download and init complete");
         }
@@ -189,7 +195,7 @@ namespace FluentSpotify
 
                 TimeSlider.Value = percentage;
                 ElapsedTimeLabel.Text = TimeSpan.FromMilliseconds(pos).ToString(@"m\:ss");
-            });  
+            });
         }
 
         private void Playback_PlaybackStateChanged(object sender, EventArgs e)
